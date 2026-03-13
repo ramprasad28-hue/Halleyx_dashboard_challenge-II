@@ -23,4 +23,7 @@ urlpatterns = [
     path('admin/', admin.site.urls),    
     path('',views.home),
     path('api/orders/',views.order_list),
+    path('api/dashboard/kpi/',views.dashboard_kpi),
+    path('api/dashboard/product-revenue/',views.product_revenue),
+    path('api/dashboard/order-status/',views.order_status_distribution),
 ]
