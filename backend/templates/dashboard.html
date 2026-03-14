@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -8,37 +9,59 @@
     <link href="https://cdn.jsdelivr.net/npm/gridstack@9.2.0/dist/gridstack.min.css" rel="stylesheet"/>
     <script src="https://cdn.jsdelivr.net/npm/gridstack@9.2.0/dist/gridstack-all.js"></script>
 
-    <style>
-.grid-stack-item-content{
-    background:white;
-    border-radius:8px;
-    padding:15px;
-    box-shadow:0 2px 5px rgba(0,0,0,0.1);
-}
+<style>
 
 body{
     background:#f4f6f9;
     font-family:Arial;
+    margin:0;
 }
 
+.navbar{
+    background:#1f2937;
+    padding:15px 30px;
+}
+
+.navbar a{
+    color:white;
+    text-decoration:none;
+    margin-right:25px;
+    font-weight:bold;
+}
+
+.dashboard-container{
+    padding:30px;
+}
+
+.grid-stack-item-content{
+    background:white;
+    border-radius:10px;
+    padding:20px;
+    box-shadow:0 4px 10px rgba(0,0,0,0.08);
+}
+
+.kpi{
+    font-size:28px;
+    font-weight:bold;
+    margin-top:10px;
+}
 
 h3{
     margin:0;
+    color:#555;
 }
 
 canvas{
     width:100% !important;
 }
-.charts{
-        margin-top:40px;
-    }
+
 </style>
 </head>
 
 <body>
-<div style="background:#333;padding:10px;">
-    <a href="/dashboard/" style="color:white;margin-right:20px;text-decoration:none;">Dashboard</a>
-    <a href="/orders/" style="color:white;text-decoration:none;">Orders</a>
+<div class="navbar">
+    <a href="/dashboard/">Dashboard</a>
+    <a href="/orders/">Orders</a>
 </div>
 <label for="dateFilter">Show data for:</label>
 
@@ -58,7 +81,7 @@ canvas{
 <div class="grid-stack-item-content">
 
 <h3>Total Revenue</h3>
-<p id="revenue">0</p>
+<p id="revenue" class="kpi">0</p>
 
 </div>
 </div>
@@ -67,7 +90,7 @@ canvas{
 <div class="grid-stack-item-content">
 
 <h3>Total Orders</h3>
-<p id="orders">0</p>
+<p id="orders" class="kpi">0</p>
 
 </div>
 </div>
@@ -76,42 +99,31 @@ canvas{
 <div class="grid-stack-item-content">
 
 <h3>Average Order Value</h3>
-<p id="avg">0</p>
+<p id="avg" class="kpi">0</p>
 
 </div>
 </div>
 
 <div class="grid-stack-item" gs-w="6" gs-h="4">
 <div class="grid-stack-item-content">
-
-<canvas id="productChart"></canvas>
-
+    
+    <canvas id="productChart"></canvas>
+    
 </div>
 </div>
 
 <div class="grid-stack-item" gs-w="6" gs-h="4">
-<div class="grid-stack-item-content">
-
-<canvas id="statusChart"></canvas>
-
-</div>
-</div>
-
+    <div class="grid-stack-item-content">
+        
+        <canvas id="statusChart"></canvas>
+        
+    </div>
 </div>
 
-<div class="charts">
-
-<h2>Product Revenue</h2>
-<canvas id="productChart"></canvas>
-
-<h2>Order Status Distribution</h2>
-<canvas id="statusChart"></canvas>
-
 </div>
-
 <script>
-
-document.addEventListener("DOMContentLoaded", function() {
+    
+document.addEventListener("DOMContentLoaded", function () {
 
     const grid = GridStack.init({
         column: 12,
@@ -119,16 +131,29 @@ document.addEventListener("DOMContentLoaded", function() {
         float: true
     });
 
-});
+    grid.on('change', function(){
 
+        const layout = grid.save();
+
+        fetch("/api/save-layout/",{
+            method:"POST",
+            headers:{
+                "Content-Type":"application/json"
+            },
+            body:JSON.stringify(layout)
+        });
+
+    });
+
+});
 let editMode = false;
 
 function toggleEdit(){
 
     editMode = !editMode;
-
+    
     const grid = document.querySelector('.grid-stack').gridstack;
-
+    
     if(editMode){
         grid.enableMove(true);
         grid.enableResize(true);
@@ -138,36 +163,17 @@ function toggleEdit(){
         grid.enableResize(false);
         alert("Dashboard locked");
     }
-
+    
 }
 
 
 
-const grid = GridStack.init();
-
-grid.on('change', function(){
-
-    const layout = grid.save();
-
-    fetch("/api/save-layout/",{
-
-        method:"POST",
-
-        headers:{
-            "Content-Type":"application/json"
-        },
-
-        body:JSON.stringify(layout)
-
-    });
-
-});
 
 
 </script>
+<script src="{% static 'js/dashboard.js' %}"></script>
 
 
-<script src="/static/js/dashboard.js"></script>
 
 </body>
 </html>
