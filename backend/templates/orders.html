@@ -1,0 +1,88 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Orders</title>
+
+<style>
+
+body{
+    font-family: Arial;
+    background:#f4f6f9;
+    margin:30px;
+}
+
+h1{
+    margin-bottom:20px;
+}
+
+.top-bar{
+    margin-bottom:20px;
+}
+
+button{
+    padding:8px 14px;
+    background:#007bff;
+    color:white;
+    border:none;
+    border-radius:5px;
+}
+
+table{
+    width:100%;
+    border-collapse:collapse;
+    background:white;
+}
+
+th,td{
+    padding:10px;
+    border-bottom:1px solid #ddd;
+}
+
+th{
+    background:#f1f1f1;
+    text-align:left;
+}
+
+</style>
+</head>
+
+<body>
+
+<h1>Customer Orders</h1>
+
+<div class="top-bar">
+
+<form action="/api/upload-orders/" method="post" enctype="multipart/form-data">
+{% csrf_token %}
+<input type="file" name="file">
+<button type="submit">Upload CSV</button>
+</form>
+
+</div>
+
+<table>
+
+<tr>
+<th>Customer</th>
+<th>Product</th>
+<th>Quantity</th>
+<th>Total</th>
+<th>Status</th>
+</tr>
+
+{% for order in orders %}
+
+<tr>
+<td>{{order.first_name}} {{order.last_name}}</td>
+<td>{{order.product}}</td>
+<td>{{order.quantity}}</td>
+<td>{{order.total_amount}}</td>
+<td>{{order.status}}</td>
+</tr>
+
+{% endfor %}
+
+</table>
+
+</body>
+</html>

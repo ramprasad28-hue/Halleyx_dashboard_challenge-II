@@ -26,4 +26,9 @@ urlpatterns = [
     path('api/dashboard/kpi/',views.dashboard_kpi),
     path('api/dashboard/product-revenue/',views.product_revenue),
     path('api/dashboard/order-status/',views.order_status_distribution),
+    path('dashboard/',views.dashboard),
+    path('api/upload-orders/',views.upload_orders_csv),
+    path('orders/',views.orders_page),
+    path('api/save-layout/',views.save_layout),
+    path('api/load-layout/',views.load_layout),
 ]

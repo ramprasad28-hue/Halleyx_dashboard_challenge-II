@@ -1,0 +1,173 @@
+<!DOCTYPE html>
+<html>
+<head>
+    <title>Dashboard</title>
+
+    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+    <link href="https://cdn.jsdelivr.net/npm/gridstack@9.2.0/dist/gridstack.min.css" rel="stylesheet"/>
+    <script src="https://cdn.jsdelivr.net/npm/gridstack@9.2.0/dist/gridstack-all.js"></script>
+
+    <style>
+.grid-stack-item-content{
+    background:white;
+    border-radius:8px;
+    padding:15px;
+    box-shadow:0 2px 5px rgba(0,0,0,0.1);
+}
+
+body{
+    background:#f4f6f9;
+    font-family:Arial;
+}
+
+
+h3{
+    margin:0;
+}
+
+canvas{
+    width:100% !important;
+}
+.charts{
+        margin-top:40px;
+    }
+</style>
+</head>
+
+<body>
+<div style="background:#333;padding:10px;">
+    <a href="/dashboard/" style="color:white;margin-right:20px;text-decoration:none;">Dashboard</a>
+    <a href="/orders/" style="color:white;text-decoration:none;">Orders</a>
+</div>
+<label for="dateFilter">Show data for:</label>
+
+<select id="dateFilter">
+    <option value="all">All time</option>
+    <option value="today">Today</option>
+    <option value="7">Last 7 days</option>
+    <option value="30">Last 30 days</option>
+    <option value="90">Last 90 days</option>
+</select>
+
+<button onclick="toggleEdit()">Configure Dashboard</button>
+
+<div class="grid-stack">
+
+<div class="grid-stack-item" gs-w="4" gs-h="2">
+<div class="grid-stack-item-content">
+
+<h3>Total Revenue</h3>
+<p id="revenue">0</p>
+
+</div>
+</div>
+
+<div class="grid-stack-item" gs-w="4" gs-h="2">
+<div class="grid-stack-item-content">
+
+<h3>Total Orders</h3>
+<p id="orders">0</p>
+
+</div>
+</div>
+
+<div class="grid-stack-item" gs-w="4" gs-h="2">
+<div class="grid-stack-item-content">
+
+<h3>Average Order Value</h3>
+<p id="avg">0</p>
+
+</div>
+</div>
+
+<div class="grid-stack-item" gs-w="6" gs-h="4">
+<div class="grid-stack-item-content">
+
+<canvas id="productChart"></canvas>
+
+</div>
+</div>
+
+<div class="grid-stack-item" gs-w="6" gs-h="4">
+<div class="grid-stack-item-content">
+
+<canvas id="statusChart"></canvas>
+
+</div>
+</div>
+
+</div>
+
+<div class="charts">
+
+<h2>Product Revenue</h2>
+<canvas id="productChart"></canvas>
+
+<h2>Order Status Distribution</h2>
+<canvas id="statusChart"></canvas>
+
+</div>
+
+<script>
+
+document.addEventListener("DOMContentLoaded", function() {
+
+    const grid = GridStack.init({
+        column: 12,
+        cellHeight: 80,
+        float: true
+    });
+
+});
+
+let editMode = false;
+
+function toggleEdit(){
+
+    editMode = !editMode;
+
+    const grid = document.querySelector('.grid-stack').gridstack;
+
+    if(editMode){
+        grid.enableMove(true);
+        grid.enableResize(true);
+        alert("Dashboard edit mode enabled");
+    } else {
+        grid.enableMove(false);
+        grid.enableResize(false);
+        alert("Dashboard locked");
+    }
+
+}
+
+
+
+const grid = GridStack.init();
+
+grid.on('change', function(){
+
+    const layout = grid.save();
+
+    fetch("/api/save-layout/",{
+
+        method:"POST",
+
+        headers:{
+            "Content-Type":"application/json"
+        },
+
+        body:JSON.stringify(layout)
+
+    });
+
+});
+
+
+</script>
+
+
+<script src="/static/js/dashboard.js"></script>
+
+</body>
+</html>

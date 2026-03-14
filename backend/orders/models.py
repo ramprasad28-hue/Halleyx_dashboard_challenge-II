@@ -28,3 +28,9 @@ class CustomerOrder(models.Model):
 
     def __str__(self):
         return self.first_name
+    
+class DashboardLayout(models.Model):
+
+    layout = models.JSONField()
+
+    created_at = models.DateTimeField(auto_now_add=True)

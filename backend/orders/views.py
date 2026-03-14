@@ -1,3 +1,4 @@
+import csv
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from .models import CustomerOrder
@@ -10,12 +11,22 @@ from rest_framework.response import Response
 from .models import CustomerOrder
 
 from django.db.models import Count
+from django.shortcuts import render
+from django.http import JsonResponse
+from .models import CustomerOrder
+
+from datetime import timedelta
+from django.utils import timezone
 
 @api_view(['GET'])
 def order_list(request):
     orders = CustomerOrder.objects.all()
     serializer = CustomerOrderSerializer(orders, many=True)
     return Response(serializer.data)
+
+from django.views.decorators.csrf import csrf_exempt
+import json
+from .models import DashboardLayout
 
 
 def home(request):
@@ -71,3 +82,87 @@ def order_status_distribution(request):
     )
 
     return Response(data)
+
+
+
+def dashboard(request):
+    return render(request,"dashboard.html")
+
+
+
+def upload_orders_csv(request):
+    if request.method == "POST":
+
+        csv_file = request.FILES['file']
+        decoded_file = csv_file.read().decode('utf-8').splitlines()
+        reader = csv.DictReader(decoded_file)
+
+        for row in reader:
+            CustomerOrder.objects.create(
+                first_name=row['first_name'],
+                last_name=row['last_name'],
+                product=row['product'],
+                quantity=row['quantity'],
+                unit_price=row['unit_price'],
+                total_amount=float(row['quantity']) * float(row['unit_price']),
+                status=row['status']
+            )
+
+        return JsonResponse({"message": "CSV uploaded successfully"})
+    return JsonResponse({"error": "Invalid request"}, status=400)
+
+from django.shortcuts import render
+from .models import CustomerOrder
+
+def orders_page(request):
+
+    orders = CustomerOrder.objects.all()
+
+    return render(request,"orders.html",{"orders":orders})
+
+
+
+def dashboard_kpi(request):
+
+    orders = CustomerOrder.objects.all()
+
+    total_orders = orders.count()
+
+    total_revenue = orders.aggregate(
+        Sum("total_amount")
+    )["total_amount__sum"] or 0
+
+    avg_value = orders.aggregate(
+        Avg("total_amount")
+    )["total_amount__avg"] or 0
+
+    return JsonResponse({
+        "total_revenue": total_revenue,
+        "total_orders": total_orders,
+        "average_order_value": avg_value
+    })
+
+
+
+@csrf_exempt
+def save_layout(request):
+
+    if request.method == "POST":
+
+        data = json.loads(request.body)
+
+        DashboardLayout.objects.all().delete()
+
+        DashboardLayout.objects.create(layout=data)
+
+        return JsonResponse({"message":"layout saved"})
+    
+
+def load_layout(request):
+
+    layout = DashboardLayout.objects.first()
+
+    if layout:
+        return JsonResponse(layout.layout, safe=False)
+
+    return JsonResponse([])
