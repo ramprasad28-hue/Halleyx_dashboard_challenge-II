@@ -42,11 +42,13 @@ h2{
 table{
     width:100%;
     border-collapse:collapse;
+    background: white;
 }
 
 th, td{
     padding:12px;
     text-align:left;
+    border-bottom:1px solid #ddd;
 }
 
 th{
@@ -54,11 +56,11 @@ th{
 }
 
 tr:nth-child(even){
-    background:#f9fafb;
+    background:#f3f4f6;
 }
 
 tr:hover{
-    background:#eef2ff;
+    background:#f9fafb;
 }
 
 .upload-box{
@@ -81,19 +83,38 @@ button:hover{
 .status-pending{
     color:orange;
     font-weight:bold;
+    background: #fef3c7;
+    border-radius: 6px;
+    padding: 4px 10px;
 }
-.status-done{
+.status-completed{
     color:green;
     font-weight:bold;
+    background: #d1fae5;
+    border-radius: 6px;
+    padding: 4px 10px;
+}
+.status-in_progress{
+    color:blue;
+    font-weight:bold;
+    background: #dbeafe;
+    border-radius: 6px;
+    padding: 4px 8px;
 }
 </style>
 
 </head>
 
 <body>
-<div class="navbar">
-    <a href="/dashboard/">Dashboard</a>
-    <a href="/orders/">Orders</a>
+<div style="background:#1f2937;padding:15px;color:white;display:flex;justify-content:space-between;">
+<div style="font-weight:bold;font-size:18px;">
+        Halleyx Dashboard
+    </div>
+
+    <div>
+        <a href="/dashboard/" style="color:white;margin-right:20px;text-decoration:none;">Dashboard</a>
+        <a href="/orders/" style="color:white;text-decoration:none;">Orders</a>
+    </div>
 </div>
 <br>
 <div class="container">
@@ -134,7 +155,9 @@ button:hover{
 <td>{{order.product}}</td>
 <td>{{order.quantity}}</td>
 <td>{{order.total_amount}}</td>
-<td>{{order.status}}</td>
+<td>
+    <span class="status-{{order.status}}">{{order.status}}</span>
+</td>
 </tr>
 
 {% endfor %}

@@ -40,6 +40,15 @@ body{
     box-shadow:0 4px 10px rgba(0,0,0,0.08);
     text-align: center;
 }
+.grid-stack-item-content h3{
+    color:#6b7280;
+    font-size: 14px;
+}
+.grid-stack-item-content p{
+    font-size: 28px;
+    font-weight: bold;
+    margin-top: 8px;
+}
 
 .kpi{
     font-size:28px;
@@ -63,27 +72,46 @@ canvas{
     font-weight: bold;
     margin-top: 10px;
 }
+button{
+    background: #2563eb;
+    color:white;
+    border:none;
+    padding: 8px 16px;
+    border-radius: 6px;
+    cursor: pointer;
+    margin-left: 10px;
+    align-items: center;
+}
+button:hover{
+    background: rgb(7, 92, 102);
+}
 
 </style>
 </head>
 
 <body>
-<div class="navbar">
-    <a href="/dashboard/">Dashboard</a>
-    <a href="/orders/">Orders</a>
-</div>
-<label for="dateFilter">Show data for:</label>
+<div style="background:#1f2937;padding:15px;color:white;display:flex;justify-content:space-between;">
+<div style="font-weight:bold;font-size:18px;">
+        Halleyx Dashboard
+    </div>
 
+    <div>
+        <a href="/dashboard/" style="color:white;margin-right:20px;text-decoration:none;">Dashboard</a>
+        <a href="/orders/" style="color:white;text-decoration:none;">Orders</a>
+    </div>
+</div>
+<!-- <label for="dateFilter">Show data for:</label> -->
+<!-- 
 <select id="dateFilter">
     <option value="all">All time</option>
     <option value="today">Today</option>
     <option value="7">Last 7 days</option>
     <option value="30">Last 30 days</option>
     <option value="90">Last 90 days</option>
-</select>
-
+</select> -->
+<br>
 <button onclick="toggleEdit()">Configure Dashboard</button>
-
+<br>
 <div class="grid-stack">
 
 <div class="grid-stack-item" gs-w="4" gs-h="2">
