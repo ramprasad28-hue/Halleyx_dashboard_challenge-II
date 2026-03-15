@@ -11,7 +11,7 @@ from rest_framework.response import Response
 from .models import CustomerOrder
 
 from django.db.models import Count
-from django.shortcuts import render
+from django.shortcuts import redirect
 from django.http import JsonResponse
 from .models import CustomerOrder
 
@@ -101,14 +101,17 @@ def upload_orders_csv(request):
             CustomerOrder.objects.create(
                 first_name=row['first_name'],
                 last_name=row['last_name'],
+                email=row['email'],
+                phone=row['phone'],
+                country=row['country'],
                 product=row['product'],
-                quantity=row['quantity'],
-                unit_price=row['unit_price'],
+                quantity=int(row['quantity']),
+                unit_price=float(row['unit_price']),
                 total_amount=float(row['quantity']) * float(row['unit_price']),
                 status=row['status']
             )
 
-        return JsonResponse({"message": "CSV uploaded successfully"})
+        return redirect('/orders/')
     return JsonResponse({"error": "Invalid request"}, status=400)
 
 from django.shortcuts import render
@@ -166,3 +169,4 @@ def load_layout(request):
         return JsonResponse(layout.layout, safe=False)
 
     return JsonResponse([])
+

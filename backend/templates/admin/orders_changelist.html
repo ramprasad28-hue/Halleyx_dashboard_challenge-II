@@ -1,0 +1,38 @@
+{% extends "admin/change_list.html" %}
+
+{% block object-tools %}{% endblock %}
+
+{% block content_title %}
+
+<h1>Select customer order to change</h1>
+
+<div style="margin-bottom:15px; display:flex; gap:10px;">
+
+<form action="/api/upload-orders/" method="post" enctype="multipart/form-data" style="display: flex;">
+    {% csrf_token %}
+    <input type="file" name="file" required>
+    <button type="submit" style="
+        background:#2563eb;
+        color:white;
+        padding: 8px 14px;
+        border:none;
+        border-radius:6px;
+        font-size: 14px;
+        cursor:pointer;">
+        Upload CSV
+    </button>
+</form>
+
+<a href="add/" style="
+background:#16a34a;
+color:white;
+padding:8px 14px;
+border-radius:6px;
+text-decoration:none;
+font-size:14px;">
+Add Customer Order by Form
+</a>
+
+</div>
+
+{% endblock %}

@@ -1,3 +1,4 @@
+{% load static %}
 <!DOCTYPE html>
 <html>
 <head>
@@ -77,7 +78,14 @@ button{
 button:hover{
     background:#1d4ed8;
 }
-
+.status-pending{
+    color:orange;
+    font-weight:bold;
+}
+.status-done{
+    color:green;
+    font-weight:bold;
+}
 </style>
 
 </head>
@@ -88,25 +96,36 @@ button:hover{
     <a href="/orders/">Orders</a>
 </div>
 <br>
-<div class="top-bar">
+<div class="container">
 
-<form action="/api/upload-orders/" method="post" enctype="multipart/form-data">
-{% csrf_token %}
-<input type="file" name="file">
+<div class="card">
+
+<h2>Upload Orders CSV</h2>
+
+<form action="/api/upload-orders/" method="post" enctype="multipart/form-data" class="upload-box">
+    {% csrf_token %}
+<input type="file" id="csvFile" name="file" required>
 <button type="submit">Upload CSV</button>
 </form>
 
 </div>
 
+
+<div class="card">
+
+<h2>Orders List</h2>
+
 <table>
 
+<thead>
 <tr>
 <th>Customer</th>
 <th>Product</th>
-<th>Quantity</th>
-<th>Total</th>
 <th>Status</th>
+<th>Amount</th>
+<th>Date</th>
 </tr>
+</thead>
 
 {% for order in orders %}
 
