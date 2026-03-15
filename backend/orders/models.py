@@ -2,6 +2,15 @@ from django.db import models
 
 class CustomerOrder(models.Model):
 
+    STATUS_CHOICES=[
+    ('pending','Pending'),
+    ('in_progress','In Progress'),
+    ('completed','Completed'),
+    ('cancelled','Cancelled'),
+    ]
+
+    status=models.CharField(max_length=20,choices=STATUS_CHOICES)
+
     first_name = models.CharField(max_length=100)
     last_name = models.CharField(max_length=100)
 
@@ -27,7 +36,7 @@ class CustomerOrder(models.Model):
         super().save(*args, **kwargs)
 
     def __str__(self):
-        return self.first_name
+        return f"{self.first_name} {self.last_name}"
     
 class DashboardLayout(models.Model):
 
