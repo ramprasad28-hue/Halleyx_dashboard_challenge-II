@@ -39,6 +39,7 @@ body{
     padding:20px;
     box-shadow:0 4px 10px rgba(0,0,0,0.08);
     text-align: center;
+    
 }
 .grid-stack-item-content h3{
     color:#6b7280;
@@ -85,19 +86,38 @@ button{
 button:hover{
     background: rgb(7, 92, 102);
 }
-
+.kpi-card{
+    padding: 20px;
+    border-radius: 10px;
+    color: white;
+    font-weight: bold;
+}
+.kpi-card p{
+    font-size: 32px;
+    font-weight: bold;
+    margin-top: 10px;
+}
+.revenue{
+    background: #16a34a;
+}
+.orders{
+    background: #2563eb;
+}
+.avg{
+    background:#ea580c;
+}
 </style>
 </head>
 
 <body>
 <div style="background:#1f2937;padding:15px;color:white;display:flex;justify-content:space-between;">
 <div style="font-weight:bold;font-size:18px;">
-        Halleyx Dashboard
+        <h1 style="margin:10px;">📊 Sales Analytics</h1>
     </div>
 
     <div>
-        <a href="/dashboard/" style="color:white;margin-right:20px;text-decoration:none;">Dashboard</a>
-        <a href="/orders/" style="color:white;text-decoration:none;">Orders</a>
+        <a href="/dashboard/" style="color:white;margin-right:20px;text-decoration:none; margin: 10px;">Dashboard</a>
+        <a href="/orders/" style="color:white;text-decoration:none;margin: 10px;">Orders</a>
     </div>
 </div>
 <!-- <label for="dateFilter">Show data for:</label> -->
@@ -115,27 +135,27 @@ button:hover{
 <div class="grid-stack">
 
 <div class="grid-stack-item" gs-w="4" gs-h="2">
-<div class="grid-stack-item-content">
+<div class="grid-stack-item-content kpi-card revenue">
 
-<h3>Total Revenue</h3>
+<h3 style="color: white;">Total Revenue</h3>
 <p id="revenue" class="kpi">0</p>
 
 </div>
 </div>
 
 <div class="grid-stack-item" gs-w="4" gs-h="2">
-<div class="grid-stack-item-content">
+<div class="grid-stack-item-content kpi-card orders">
 
-<h3>Total Orders</h3>
+<h3 style="color: white;">Total Order</h3>
 <p id="orders" class="kpi">0</p>
 
 </div>
 </div>
 
 <div class="grid-stack-item" gs-w="4" gs-h="2">
-<div class="grid-stack-item-content">
+<div class="grid-stack-item-content kpi-card avg">
 
-<h3>Average Order Value</h3>
+<h3 style="color: white;">Average Order Value</h3>
 <p id="avg" class="kpi">0</p>
 
 </div>
@@ -144,7 +164,7 @@ button:hover{
 <div class="grid-stack-item" gs-w="6" gs-h="4">
 <div class="grid-stack-item-content">
     
-    <canvas id="productChart"></canvas>
+    <canvas id="productChart" ></canvas>
     
 </div>
 </div>
@@ -152,7 +172,13 @@ button:hover{
 <div class="grid-stack-item" gs-w="6" gs-h="4">
     <div class="grid-stack-item-content">
         
-        <canvas id="statusChart"></canvas>
+        <canvas id="statusChart" style="background-color: [
+            '#3b82f6',
+            '#22c55e',
+            '#f59e0b',
+            '#ef4444',
+            '#8b5cf6'
+        ]"></canvas>
         
     </div>
 </div>

@@ -150,38 +150,6 @@ def orders_page(request):
     return render(request,"orders.html",{"orders":orders})
 
 
-
-def dashboard_kpi(request):
-    range_value=request.GET.get("range","all")
-
-    orders = CustomerOrder.objects.all()
-    if range_value=="today":
-        orders=orders.filter(created_at__date=timezone.now().date())
-    elif range_value=="7":
-        orders=orders.filter(created_at__gte=timezone.now()-timedelta(days=7))
-    elif range_value=="30":
-        orders=orders.filter(created_at__gte=timezone.now()-timedelta(days=30))
-    elif range_value=="90":
-        orders=orders.filter(created_at__gte=timezone.now()-timedelta(days=90))
-
-    total_orders = orders.count()
-
-    total_revenue = orders.aggregate(
-        Sum("total_amount")
-    )["total_amount__sum"] or 0
-
-    avg_value = orders.aggregate(
-        Avg("total_amount")
-    )["total_amount__avg"] or 0
-
-    return JsonResponse({
-        "total_revenue": total_revenue,
-        "total_orders": total_orders,
-        "average_order_value": avg_value
-    })
-
-
-
 @csrf_exempt
 def save_layout(request):
 
