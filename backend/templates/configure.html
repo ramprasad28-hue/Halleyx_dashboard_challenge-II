@@ -1,0 +1,471 @@
+{% load static %}
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Configure Dashboard — Halleyx</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
+<style>
+:root {
+  --bg: #0f1117;
+  --sidebar-bg: #13151c;
+  --surface: #1a1d27;
+  --surface2: #21263a;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text-primary: #f0f2f8;
+  --text-secondary: #8b92a9;
+  --text-muted: #555e7a;
+  --accent: #4f7bff;
+  --accent-hover: #3d67f0;
+  --accent-glow: rgba(79,123,255,0.15);
+  --success: #22c55e;
+  --danger: #ef4444;
+  --danger-bg: rgba(239,68,68,0.1);
+  --warning: #f59e0b;
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --nav-w: 220px;
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text-primary); display: flex; min-height: 100vh; font-size: 14px; }
+
+/* SIDEBAR */
+.sidebar { width: var(--nav-w); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; padding: 0 12px; }
+.sidebar-logo { padding: 22px 8px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+.logo-text { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.nav-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding: 8px 8px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius); color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500; transition: all .18s; margin-bottom: 2px; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.nav-item.active { background: var(--accent-glow); color: var(--accent); }
+
+/* MAIN */
+.main { margin-left: var(--nav-w); flex: 1; display: flex; flex-direction: column; }
+.topbar { background: var(--sidebar-bg); border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.topbar h1 { font-size: 16px; font-weight: 700; }
+.topbar p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.topbar-right { display: flex; gap: 10px; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 9px 18px; border-radius: var(--radius); border: none; cursor: pointer; font-size: 13px; font-weight: 600; font-family: var(--font); transition: all .18s; text-decoration: none; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(79,123,255,0.3); }
+.btn-secondary { background: var(--surface2); color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-secondary:hover { color: var(--text-primary); }
+.content { padding: 28px; }
+
+/* SUMMARY BAR */
+.summary-bar { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 16px 20px; display: flex; align-items: center; justify-content: space-between; margin-bottom: 28px; flex-wrap: wrap; gap: 10px; }
+.summary-bar p { font-size: 13px; color: var(--text-secondary); }
+.summary-bar strong { color: var(--accent); }
+.selected-pills { display: flex; gap: 8px; flex-wrap: wrap; }
+.pill { background: var(--accent-glow); border: 1px solid var(--accent); color: var(--accent); padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 600; }
+
+/* SECTION LABEL */
+.section-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; margin-bottom: 14px; display: flex; align-items: center; gap: 8px; }
+.section-label::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+
+/* WIDGET GRID */
+.widget-grid { display: grid; grid-template-columns: repeat(auto-fill, minmax(260px, 1fr)); gap: 16px; margin-bottom: 32px; }
+
+/* WIDGET CARD */
+.widget-card { background: var(--surface); border: 2px solid var(--border); border-radius: var(--radius-lg); padding: 20px; transition: all .2s; cursor: pointer; position: relative; }
+.widget-card:hover { border-color: var(--border2); transform: translateY(-2px); box-shadow: 0 8px 24px rgba(0,0,0,0.3); }
+.widget-card.selected { border-color: var(--accent); background: linear-gradient(135deg, var(--accent-glow), var(--surface)); }
+
+/* CHECKMARK */
+.card-check { width: 22px; height: 22px; border-radius: 6px; border: 2px solid var(--border2); background: var(--surface2); position: absolute; top: 16px; right: 16px; transition: all .15s; display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; }
+.widget-card.selected .card-check { background: var(--accent); border-color: var(--accent); }
+.widget-card.selected .card-check::after { content: '✓'; }
+
+/* CARD BODY */
+.card-icon { font-size: 28px; margin-bottom: 10px; }
+.card-title { font-size: 14px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.card-desc { font-size: 12px; color: var(--text-muted); line-height: 1.5; margin-bottom: 0; }
+
+/* SETTINGS (only visible when selected) */
+.card-settings { display: none; border-top: 1px solid var(--border); padding-top: 14px; margin-top: 14px; }
+.widget-card.selected .card-settings { display: block; }
+.sf { margin-bottom: 10px; }
+.sf label { display: block; font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; margin-bottom: 5px; }
+.sf select, .sf input[type=number], .sf input[type=text] { width: 100%; padding: 7px 10px; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; color: var(--text-primary); font-family: var(--font); font-size: 12px; outline: none; }
+.sf select:focus, .sf input:focus { border-color: var(--accent); }
+.sf select option { background: var(--surface2); }
+.sf input[type=color] { width: 100%; height: 34px; padding: 2px 6px; cursor: pointer; background: var(--surface2); border: 1px solid var(--border2); border-radius: 8px; }
+.sf-row { display: grid; grid-template-columns: 1fr 1fr; gap: 8px; }
+.cb-row { display: flex; align-items: center; gap: 8px; margin-top: 6px; }
+.cb-row input { width: 15px; height: 15px; accent-color: var(--accent); flex-shrink: 0; }
+.cb-row label { font-size: 12px; color: var(--text-secondary); text-transform: none; letter-spacing: 0; margin: 0; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 12px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.4); animation: slideUp .2s ease; transition: opacity .3s; }
+.toast.hide { opacity: 0; }
+.toast-success { border-left: 3px solid var(--success); }
+.toast-error { border-left: 3px solid var(--danger); }
+@keyframes slideUp { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:translateY(0) } }
+</style>
+</head>
+<body>
+
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text"><div class="logo-icon">📊</div>Halleyx</div>
+  </div>
+  <div class="nav-label">Menu</div>
+  <a href="/dashboard/" class="nav-item">▦ Dashboard</a>
+  <a href="/orders/" class="nav-item">📋 Orders</a>
+  <a href="/configure/" class="nav-item active">⚙️ Configure</a>
+</aside>
+
+<main class="main">
+  <div class="topbar">
+    <div>
+      <h1>Configure Dashboard</h1>
+      <p>Click widgets to select them, configure settings, then save</p>
+    </div>
+    <div class="topbar-right">
+      <a href="/dashboard/" class="btn btn-secondary">← Back</a>
+      <button class="btn btn-primary" onclick="saveConfig()">💾 Save Configuration</button>
+    </div>
+  </div>
+
+  <div class="content">
+
+    <!-- SUMMARY -->
+    <div class="summary-bar">
+      <p><strong id="selectedCount">0</strong> widgets selected</p>
+      <div class="selected-pills" id="selectedPills"></div>
+    </div>
+
+    <!-- KPI CARDS -->
+    <div class="section-label">🎯 KPI Cards</div>
+    <div class="widget-grid">
+
+      <div class="widget-card" id="card-kpi1" onclick="toggleCard('kpi1')">
+        <div class="card-check"></div>
+        <div class="card-icon">💰</div>
+        <div class="card-title">Total Revenue</div>
+        <div class="card-desc">Sum of all order amounts</div>
+        <div class="card-settings">
+          <div class="sf"><label>Metric</label>
+            <select id="kpi1-metric" onclick="e=>e.stopPropagation()">
+              <option value="total_amount">Total Amount</option>
+              <option value="unit_price">Unit Price</option>
+              <option value="quantity">Quantity</option>
+            </select>
+          </div>
+          <div class="sf"><label>Aggregation</label>
+            <select id="kpi1-agg">
+              <option value="sum">Sum</option>
+              <option value="avg">Average</option>
+              <option value="count">Count</option>
+            </select>
+          </div>
+          <div class="sf-row">
+            <div class="sf"><label>Format</label>
+              <select id="kpi1-format">
+                <option value="currency">Currency ($)</option>
+                <option value="number">Number</option>
+              </select>
+            </div>
+            <div class="sf"><label>Decimals</label>
+              <input type="number" id="kpi1-precision" value="0" min="0" max="4">
+            </div>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget-card" id="card-kpi2" onclick="toggleCard('kpi2')">
+        <div class="card-check"></div>
+        <div class="card-icon">📦</div>
+        <div class="card-title">Total Orders</div>
+        <div class="card-desc">Count of all customer orders</div>
+        <div class="card-settings">
+          <div class="sf"><label>Format</label>
+            <select id="kpi2-format">
+              <option value="number">Number</option>
+              <option value="currency">Currency ($)</option>
+            </select>
+          </div>
+        </div>
+      </div>
+
+      <div class="widget-card" id="card-kpi3" onclick="toggleCard('kpi3')">
+        <div class="card-check"></div>
+        <div class="card-icon">📊</div>
+        <div class="card-title">Average Order Value</div>
+        <div class="card-desc">Average amount per order</div>
+        <div class="card-settings">
+          <div class="sf"><label>Metric</label>
+            <select id="kpi3-metric">
+              <option value="total_amount">Total Amount</option>
+              <option value="unit_price">Unit Price</option>
+              <option value="quantity">Quantity</option>
+            </select>
+          </div>
+          <div class="sf-row">
+            <div class="sf"><label>Format</label>
+              <select id="kpi3-format">
+                <option value="currency">Currency ($)</option>
+                <option value="number">Number</option>
+              </select>
+            </div>
+            <div class="sf"><label>Decimals</label>
+              <input type="number" id="kpi3-precision" value="2" min="0" max="4">
+            </div>
+          </div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- CHARTS -->
+    <div class="section-label">📈 Charts</div>
+    <div class="widget-grid">
+
+      <div class="widget-card" id="card-bar" onclick="toggleCard('bar')">
+        <div class="card-check"></div>
+        <div class="card-icon">📊</div>
+        <div class="card-title">Bar Chart</div>
+        <div class="card-desc">Compare values across categories</div>
+        <div class="card-settings">
+          <div class="sf"><label>X Axis</label>
+            <select id="bar-x">
+              <option value="product">Product</option>
+              <option value="status">Status</option>
+              <option value="created_by">Created By</option>
+              <option value="country">Country</option>
+            </select>
+          </div>
+          <div class="sf"><label>Y Axis</label>
+            <select id="bar-y">
+              <option value="total_amount">Total Amount</option>
+              <option value="quantity">Quantity</option>
+              <option value="unit_price">Unit Price</option>
+            </select>
+          </div>
+          <div class="sf"><label>Color</label><input type="color" id="bar-color" value="#4f7bff"></div>
+          <div class="cb-row"><input type="checkbox" id="bar-labels"><label for="bar-labels">Show data labels</label></div>
+        </div>
+      </div>
+
+      <div class="widget-card" id="card-line" onclick="toggleCard('line')">
+        <div class="card-check"></div>
+        <div class="card-icon">📈</div>
+        <div class="card-title">Line Chart</div>
+        <div class="card-desc">Show trends across categories</div>
+        <div class="card-settings">
+          <div class="sf"><label>X Axis</label>
+            <select id="line-x">
+              <option value="product">Product</option>
+              <option value="status">Status</option>
+              <option value="created_by">Created By</option>
+            </select>
+          </div>
+          <div class="sf"><label>Y Axis</label>
+            <select id="line-y">
+              <option value="total_amount">Total Amount</option>
+              <option value="quantity">Quantity</option>
+              <option value="unit_price">Unit Price</option>
+            </select>
+          </div>
+          <div class="sf"><label>Color</label><input type="color" id="line-color" value="#22c55e"></div>
+        </div>
+      </div>
+
+      <div class="widget-card" id="card-pie" onclick="toggleCard('pie')">
+        <div class="card-check"></div>
+        <div class="card-icon">🥧</div>
+        <div class="card-title">Pie Chart</div>
+        <div class="card-desc">Show distribution as slices</div>
+        <div class="card-settings">
+          <div class="sf"><label>Group By</label>
+            <select id="pie-data">
+              <option value="status">Status</option>
+              <option value="product">Product</option>
+              <option value="created_by">Created By</option>
+              <option value="country">Country</option>
+            </select>
+          </div>
+          <div class="cb-row"><input type="checkbox" id="pie-legend" checked><label for="pie-legend">Show legend</label></div>
+        </div>
+      </div>
+
+      <div class="widget-card" id="card-area" onclick="toggleCard('area')">
+        <div class="card-check"></div>
+        <div class="card-icon">📉</div>
+        <div class="card-title">Area Chart</div>
+        <div class="card-desc">Line chart with filled area</div>
+        <div class="card-settings">
+          <div class="sf"><label>X Axis</label>
+            <select id="area-x">
+              <option value="product">Product</option>
+              <option value="status">Status</option>
+              <option value="created_by">Created By</option>
+            </select>
+          </div>
+          <div class="sf"><label>Y Axis</label>
+            <select id="area-y">
+              <option value="total_amount">Total Amount</option>
+              <option value="quantity">Quantity</option>
+              <option value="unit_price">Unit Price</option>
+            </select>
+          </div>
+          <div class="sf"><label>Color</label><input type="color" id="area-color" value="#f59e0b"></div>
+        </div>
+      </div>
+
+      <div class="widget-card" id="card-scatter" onclick="toggleCard('scatter')">
+        <div class="card-check"></div>
+        <div class="card-icon">✦</div>
+        <div class="card-title">Scatter Plot</div>
+        <div class="card-desc">Correlation between two fields</div>
+        <div class="card-settings">
+          <div class="sf"><label>X Axis</label>
+            <select id="scatter-x">
+              <option value="quantity">Quantity</option>
+              <option value="unit_price">Unit Price</option>
+              <option value="total_amount">Total Amount</option>
+            </select>
+          </div>
+          <div class="sf"><label>Y Axis</label>
+            <select id="scatter-y">
+              <option value="total_amount">Total Amount</option>
+              <option value="unit_price">Unit Price</option>
+              <option value="quantity">Quantity</option>
+            </select>
+          </div>
+          <div class="sf"><label>Color</label><input type="color" id="scatter-color" value="#8b5cf6"></div>
+        </div>
+      </div>
+
+    </div>
+
+    <!-- TABLE -->
+    <div class="section-label">📋 Table</div>
+    <div class="widget-grid">
+
+      <div class="widget-card" id="card-table" onclick="toggleCard('table')">
+        <div class="card-check"></div>
+        <div class="card-icon">🗂️</div>
+        <div class="card-title">Orders Table</div>
+        <div class="card-desc">Paginated sortable orders list</div>
+        <div class="card-settings">
+          <div class="sf"><label>Sort By</label>
+            <select id="table-sort">
+              <option value="">None</option>
+              <option value="asc">Amount Ascending</option>
+              <option value="desc">Amount Descending</option>
+            </select>
+          </div>
+          <div class="sf-row">
+            <div class="sf"><label>Rows Per Page</label>
+              <select id="table-pagination">
+                <option value="5">5</option>
+                <option value="10" selected>10</option>
+                <option value="15">15</option>
+              </select>
+            </div>
+            <div class="sf"><label>Font Size</label>
+              <input type="number" id="table-fontsize" value="14" min="12" max="18">
+            </div>
+          </div>
+          <div class="sf"><label>Header Color</label>
+            <input type="color" id="table-headerbg" value="#54bd95">
+          </div>
+        </div>
+      </div>
+
+    </div>
+  </div>
+</main>
+
+<script>
+const selected = new Set();
+const NAMES = { kpi1:'Total Revenue', kpi2:'Total Orders', kpi3:'Avg Order Value', bar:'Bar Chart', line:'Line Chart', pie:'Pie Chart', area:'Area Chart', scatter:'Scatter Plot', table:'Orders Table' };
+
+function toggleCard(id) {
+  // Prevent toggle when clicking selects/inputs inside card
+  if (event.target.tagName === 'SELECT' || event.target.tagName === 'INPUT' || event.target.tagName === 'LABEL') return;
+  const card = document.getElementById('card-' + id);
+  if (selected.has(id)) { selected.delete(id); card.classList.remove('selected'); }
+  else { selected.add(id); card.classList.add('selected'); }
+  updateSummary();
+}
+
+function updateSummary() {
+  document.getElementById('selectedCount').textContent = selected.size;
+  document.getElementById('selectedPills').innerHTML = Array.from(selected).map(id => `<span class="pill">${NAMES[id]}</span>`).join('');
+}
+
+function val(id) {
+  const el = document.getElementById(id);
+  if (!el) return null;
+  if (el.type === 'checkbox') return el.checked;
+  if (el.type === 'number') return parseInt(el.value) || 0;
+  return el.value;
+}
+
+function getConfig(id) {
+  if (id==='kpi1') return { type:'kpi', title:'Total Revenue', metric:val('kpi1-metric'), aggregation:val('kpi1-agg'), format:val('kpi1-format'), precision:val('kpi1-precision') };
+  if (id==='kpi2') return { type:'kpi', title:'Total Orders', metric:'total_amount', aggregation:'count', format:val('kpi2-format'), precision:0 };
+  if (id==='kpi3') return { type:'kpi', title:'Avg Order Value', metric:val('kpi3-metric'), aggregation:'avg', format:val('kpi3-format'), precision:val('kpi3-precision') };
+  if (id==='bar') return { type:'bar_chart', title:'Bar Chart', xAxis:val('bar-x'), yAxis:val('bar-y'), color:val('bar-color'), showLabels:val('bar-labels') };
+  if (id==='line') return { type:'line_chart', title:'Line Chart', xAxis:val('line-x'), yAxis:val('line-y'), color:val('line-color') };
+  if (id==='pie') return { type:'pie_chart', title:'Pie Chart', chartData:val('pie-data'), showLegend:val('pie-legend') };
+  if (id==='area') return { type:'area_chart', title:'Area Chart', xAxis:val('area-x'), yAxis:val('area-y'), color:val('area-color') };
+  if (id==='scatter') return { type:'scatter_chart', title:'Scatter Plot', xAxis:val('scatter-x'), yAxis:val('scatter-y'), color:val('scatter-color') };
+  if (id==='table') return { type:'table', title:'Orders Table', sortBy:val('table-sort'), pagination:val('table-pagination'), fontSize:val('table-fontsize'), headerBg:val('table-headerbg'), columns:['first_name','last_name','product','status','total_amount','created_at'] };
+}
+
+function saveConfig() {
+  if (selected.size === 0) { showToast('Select at least one widget', 'error'); return; }
+  const configs = {};
+  let i = 1;
+  selected.forEach(id => { configs['w'+i] = getConfig(id); i++; });
+  fetch('/api/save-layout/', {
+    method: 'POST',
+    headers: { 'Content-Type':'application/json', 'X-CSRFToken':getCookie('csrftoken') },
+    body: JSON.stringify({ configs })
+  })
+  .then(r => r.json())
+  .then(() => { showToast('Saved! Going to dashboard...', 'success'); setTimeout(() => window.location.href='/dashboard/', 1500); })
+  .catch(() => showToast('Save failed', 'error'));
+}
+
+function loadExisting() {
+  fetch('/api/load-layout/').then(r=>r.json()).then(data=>{
+    if (!data || !data.configs) return;
+    Object.values(data.configs).forEach(cfg => {
+      const map = { kpi:'kpi1', bar_chart:'bar', line_chart:'line', pie_chart:'pie', area_chart:'area', scatter_chart:'scatter', table:'table' };
+      let cardId = map[cfg.type];
+      if (cfg.type==='kpi') {
+        if (cfg.title==='Total Orders') cardId='kpi2';
+        else if (cfg.title==='Avg Order Value') cardId='kpi3';
+        else cardId='kpi1';
+      }
+      if (cardId) { selected.add(cardId); document.getElementById('card-'+cardId)?.classList.add('selected'); }
+    });
+    updateSummary();
+  }).catch(()=>{});
+}
+
+function showToast(msg, type='success') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<span>${type==='success'?'✅':'❌'}</span> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(()=>{ t.classList.add('hide'); setTimeout(()=>t.remove(),300); }, 2500);
+}
+
+function getCookie(name) {
+  const v = document.cookie.match('(^|;)\\s*'+name+'\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+
+loadExisting();
+</script>
+</body>
+</html>

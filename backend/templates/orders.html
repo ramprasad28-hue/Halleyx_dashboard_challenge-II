@@ -1,167 +1,654 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-<title>Orders</title>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Orders — Halleyx</title>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #0f1117;
+  --sidebar-bg: #13151c;
+  --surface: #1a1d27;
+  --surface2: #21263a;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text-primary: #f0f2f8;
+  --text-secondary: #8b92a9;
+  --text-muted: #555e7a;
+  --accent: #4f7bff;
+  --accent-hover: #3d67f0;
+  --accent-glow: rgba(79,123,255,0.15);
+  --success: #22c55e;
+  --warning: #f59e0b;
+  --danger: #ef4444;
+  --success-bg: rgba(34,197,94,0.1);
+  --warning-bg: rgba(245,158,11,0.1);
+  --danger-bg: rgba(239,68,68,0.1);
+  --radius: 10px;
+  --radius-lg: 14px;
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --sidebar-w: 220px;
+  --transition: 0.18s ease;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text-primary); display: flex; min-height: 100vh; font-size: 14px; }
 
-body{
-    background:#f4f6f9;
-    font-family:Arial;
-    margin:0;
-}
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; padding: 0 12px; }
+.sidebar-logo { padding: 22px 8px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+.logo-text { font-size: 18px; font-weight: 700; color: var(--text-primary); display: flex; align-items: center; gap: 10px; letter-spacing: -.3px; }
+.logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.nav-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding: 8px 8px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius); color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500; transition: all var(--transition); margin-bottom: 2px; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.nav-item.active { background: var(--accent-glow); color: var(--accent); }
+.sidebar-bottom { margin-top: auto; padding: 16px 8px; border-top: 1px solid var(--border); }
+.user-pill { display: flex; align-items: center; gap: 10px; padding: 8px; border-radius: var(--radius); cursor: pointer; }
+.avatar { width: 32px; height: 32px; border-radius: 50%; background: linear-gradient(135deg, var(--accent), #7c3aed); display: flex; align-items: center; justify-content: center; font-size: 12px; font-weight: 700; color: white; flex-shrink: 0; }
+.user-info .name { font-size: 12px; font-weight: 600; color: var(--text-primary); }
+.user-info .role { font-size: 11px; color: var(--text-muted); }
 
-.navbar{
-    background:#1f2937;
-    padding:15px 30px;
-}
+/* MAIN */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
 
-.navbar a{
-    color:white;
-    text-decoration:none;
-    margin-right:25px;
-    font-weight:bold;
-}
+/* TOPBAR */
+.topbar { background: var(--sidebar-bg); border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.topbar h1 { font-size: 16px; font-weight: 700; }
+.topbar p { font-size: 12px; color: var(--text-muted); margin-top: 1px; }
 
-.container{
-    padding:30px;
-}
+/* CSV UPLOAD BOX */
+.csv-box { display: none; background: var(--surface); border-bottom: 1px solid var(--border); padding: 16px 28px; }
+.csv-box.show { display: block; }
+.csv-box-inner { display: flex; align-items: center; gap: 12px; flex-wrap: wrap; }
+.csv-title { font-size: 13px; font-weight: 600; color: var(--text-primary); white-space: nowrap; }
+.csv-controls { display: flex; align-items: center; gap: 10px; flex: 1; flex-wrap: wrap; }
+.csv-choose-btn { background: var(--surface2); border: 1px solid var(--border2); border-radius: var(--radius); padding: 8px 14px; color: var(--text-secondary); font-size: 13px; font-family: var(--font); cursor: pointer; display: flex; align-items: center; gap: 8px; transition: all .18s; white-space: nowrap; }
+.csv-choose-btn:hover { border-color: var(--accent); color: var(--text-primary); }
+.csv-filename { font-size: 12px; color: var(--text-muted); font-family: var(--font); }
+.csv-hint { font-size: 11px; color: var(--text-muted); width: 100%; margin-top: 4px; }
 
-.card{
-    background:white;
-    padding:20px;
-    border-radius:10px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.08);
-    margin-bottom:25px;
-}
+/* BUTTONS */
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); border: none; cursor: pointer; font-size: 13px; font-weight: 600; font-family: var(--font); transition: all var(--transition); }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: var(--accent-hover); transform: translateY(-1px); box-shadow: 0 4px 16px rgba(79,123,255,0.3); }
+.btn-secondary { background: var(--surface2); color: var(--text-secondary); border: 1px solid var(--border); }
+.btn-secondary:hover { color: var(--text-primary); background: rgba(255,255,255,0.06); }
+.btn-danger { background: transparent; color: var(--danger); border: 1px solid rgba(239,68,68,0.3); }
+.btn-danger:hover { background: var(--danger-bg); }
+.btn-sm { padding: 7px 12px; font-size: 12px; }
 
-h2{
-    margin-top:0;
-}
+/* CONTENT */
+.content { padding: 24px 28px; flex: 1; }
 
-table{
-    width:100%;
-    border-collapse:collapse;
-    background: white;
-}
+/* STATS */
+.stats-row { display: grid; grid-template-columns: repeat(4,1fr); gap: 16px; margin-bottom: 24px; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 18px 20px; transition: border-color var(--transition); }
+.stat-card:hover { border-color: var(--border2); }
+.stat-label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; margin-bottom: 8px; }
+.stat-value { font-size: 26px; font-weight: 700; line-height: 1; }
+.stat-sub { font-size: 11px; color: var(--text-muted); margin-top: 4px; }
 
-th, td{
-    padding:12px;
-    text-align:left;
-    border-bottom:1px solid #ddd;
-}
+/* TABLE CARD */
+.table-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); overflow: hidden; }
+.table-header { padding: 18px 22px; border-bottom: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; gap: 12px; flex-wrap: wrap; }
+.table-header h2 { font-size: 15px; font-weight: 700; }
+.table-header-right { display: flex; gap: 10px; align-items: center; }
+.search-box { display: flex; align-items: center; gap: 8px; background: var(--surface2); border: 1px solid var(--border); border-radius: var(--radius); padding: 7px 12px; transition: border-color var(--transition); }
+.search-box:focus-within { border-color: var(--accent); }
+.search-box input { background: none; border: none; outline: none; color: var(--text-primary); font-size: 13px; font-family: var(--font); width: 180px; }
+.search-box input::placeholder { color: var(--text-muted); }
 
-th{
-    background:#f1f5f9;
-}
+/* TABLE */
+.tbl-wrap { overflow-x: auto; }
+table { width: 100%; border-collapse: collapse; }
+thead th { padding: 11px 16px; text-align: left; font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .6px; background: rgba(255,255,255,0.02); border-bottom: 1px solid var(--border); white-space: nowrap; }
+tbody td { padding: 14px 16px; border-bottom: 1px solid var(--border); font-size: 13px; color: var(--text-secondary); vertical-align: middle; }
+tbody tr { transition: background var(--transition); }
+tbody tr:hover { background: rgba(255,255,255,0.025); }
+tbody tr:last-child td { border-bottom: none; }
+.customer-name { font-weight: 600; color: var(--text-primary); }
+.customer-email { font-size: 11px; color: var(--text-muted); margin-top: 2px; }
 
-tr:nth-child(even){
-    background:#f3f4f6;
-}
+/* BADGES */
+.badge { display: inline-flex; align-items: center; gap: 5px; padding: 3px 10px; border-radius: 20px; font-size: 11px; font-weight: 700; white-space: nowrap; }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; flex-shrink: 0; }
+.badge-pending { background: var(--warning-bg); color: var(--warning); }
+.badge-pending::before { background: var(--warning); }
+.badge-in_progress { background: var(--accent-glow); color: var(--accent); }
+.badge-in_progress::before { background: var(--accent); }
+.badge-completed { background: var(--success-bg); color: var(--success); }
+.badge-completed::before { background: var(--success); }
 
-tr:hover{
-    background:#f9fafb;
-}
+/* CONTEXT MENU */
+.ctx-btn { background: none; border: none; cursor: pointer; padding: 5px 9px; color: var(--text-muted); border-radius: 6px; font-size: 16px; transition: all var(--transition); }
+.ctx-btn:hover { background: var(--surface2); color: var(--text-primary); }
+.ctx-menu { position: fixed; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); box-shadow: 0 12px 40px rgba(0,0,0,0.6); z-index: 9999; min-width: 155px; overflow: hidden; display: none; animation: fadeIn .1s ease; }
+.ctx-menu.show { display: block; }
+.ctx-item { padding: 10px 16px; cursor: pointer; font-size: 13px; font-weight: 500; display: flex; align-items: center; gap: 10px; color: var(--text-secondary); transition: background var(--transition); }
+.ctx-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.ctx-item.delete { color: var(--danger); }
+.ctx-item.delete:hover { background: var(--danger-bg); }
 
-.upload-box{
-    display:flex;
-    gap:10px;
-}
+/* EMPTY STATE */
+.empty-state { text-align: center; padding: 64px 20px; }
+.empty-icon { font-size: 40px; margin-bottom: 12px; opacity: .4; }
+.empty-state h3 { font-size: 16px; font-weight: 600; color: var(--text-secondary); margin-bottom: 6px; }
+.empty-state p { font-size: 13px; color: var(--text-muted); }
+.table-footer { padding: 14px 22px; border-top: 1px solid var(--border); display: flex; align-items: center; justify-content: space-between; }
+.page-info { font-size: 12px; color: var(--text-muted); }
 
-button{
-    background:#2563eb;
-    color:white;
-    border:none;
-    padding:10px 18px;
-    border-radius:6px;
-    cursor:pointer;
-}
+/* OVERLAY */
+.overlay { position: fixed; inset: 0; background: rgba(0,0,0,0.72); z-index: 1000; display: none; align-items: center; justify-content: center; backdrop-filter: blur(4px); }
+.overlay.show { display: flex; }
 
-button:hover{
-    background:#1d4ed8;
-}
-.status-pending{
-    color:orange;
-    font-weight:bold;
-    background: #fef3c7;
-    border-radius: 6px;
-    padding: 4px 10px;
-}
-.status-completed{
-    color:green;
-    font-weight:bold;
-    background: #d1fae5;
-    border-radius: 6px;
-    padding: 4px 10px;
-}
-.status-in_progress{
-    color:blue;
-    font-weight:bold;
-    background: #dbeafe;
-    border-radius: 6px;
-    padding: 4px 8px;
-}
+/* MODAL */
+.modal { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); width: 680px; max-width: 95vw; max-height: 90vh; overflow-y: auto; box-shadow: 0 24px 80px rgba(0,0,0,0.7); animation: slideUp .2s ease; }
+.modal::-webkit-scrollbar { width: 4px; }
+.modal::-webkit-scrollbar-thumb { background: var(--border2); border-radius: 4px; }
+.modal-header { padding: 20px 24px; border-bottom: 1px solid var(--border); display: flex; justify-content: space-between; align-items: flex-start; position: sticky; top: 0; background: var(--surface); z-index: 10; }
+.modal-header h3 { font-size: 16px; font-weight: 700; }
+.modal-header p { font-size: 12px; color: var(--text-muted); margin-top: 3px; }
+.close-btn { background: var(--surface2); border: 1px solid var(--border); width: 30px; height: 30px; border-radius: 8px; cursor: pointer; color: var(--text-secondary); font-size: 17px; display: flex; align-items: center; justify-content: center; transition: all var(--transition); flex-shrink: 0; }
+.close-btn:hover { background: rgba(255,255,255,0.08); color: var(--text-primary); }
+.modal-body { padding: 24px; }
+.modal-footer { padding: 16px 24px; border-top: 1px solid var(--border); display: flex; justify-content: flex-end; gap: 10px; position: sticky; bottom: 0; background: var(--surface); }
+
+/* FORM */
+.section-divider { display: flex; align-items: center; gap: 12px; margin: 0 0 18px; }
+.section-divider span { font-size: 11px; font-weight: 700; color: var(--accent); text-transform: uppercase; letter-spacing: 1px; white-space: nowrap; }
+.section-divider::after { content: ''; flex: 1; height: 1px; background: var(--border); }
+.form-grid { display: grid; grid-template-columns: 1fr 1fr; gap: 14px; margin-bottom: 24px; }
+.form-group { display: flex; flex-direction: column; gap: 6px; }
+.form-group.full { grid-column: 1 / -1; }
+label { font-size: 11px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: .5px; }
+label .req { color: var(--accent); margin-left: 2px; }
+input, select { padding: 9px 12px; border: 1px solid var(--border2); border-radius: var(--radius); font-size: 13px; font-family: var(--font); color: var(--text-primary); background: var(--surface2); transition: all var(--transition); width: 100%; }
+input:focus, select:focus { outline: none; border-color: var(--accent); box-shadow: 0 0 0 3px var(--accent-glow); }
+input::placeholder { color: var(--text-muted); }
+select option { background: var(--surface2); }
+input.error, select.error { border-color: var(--danger); box-shadow: 0 0 0 3px var(--danger-bg); }
+.err-msg { font-size: 11px; color: var(--danger); display: none; }
+.err-msg.show { display: block; }
+.input-prefix { position: relative; }
+.prefix-sym { position: absolute; left: 10px; top: 50%; transform: translateY(-50%); color: var(--text-muted); font-size: 13px; pointer-events: none; }
+.input-prefix input { padding-left: 22px; }
+input[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); cursor: not-allowed; border-style: dashed; }
+
+/* CONFIRM */
+.confirm-box { background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius-lg); width: 380px; padding: 32px; text-align: center; box-shadow: 0 24px 80px rgba(0,0,0,0.7); animation: slideUp .2s ease; }
+.confirm-icon { font-size: 36px; margin-bottom: 14px; }
+.confirm-box h3 { font-size: 17px; font-weight: 700; margin-bottom: 8px; }
+.confirm-box p { color: var(--text-muted); font-size: 13px; margin-bottom: 22px; line-height: 1.6; }
+.confirm-actions { display: flex; gap: 10px; justify-content: center; }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 12px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.5); animation: slideUp .2s ease; transition: opacity .3s ease; }
+.toast.hide { opacity: 0; }
+.toast-success { border-left: 3px solid var(--success); }
+.toast-error { border-left: 3px solid var(--danger); }
+
+@keyframes fadeIn { from { opacity:0 } to { opacity:1 } }
+@keyframes slideUp { from { opacity:0; transform:translateY(16px) } to { opacity:1; transform:translateY(0) } }
 </style>
-
 </head>
-
 <body>
-<div style="background:#1f2937;padding:15px;color:white;display:flex;justify-content:space-between;">
-<div style="font-weight:bold;font-size:18px;">
-    </div>
 
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text"><div class="logo-icon">📊</div>Halleyx</div>
+  </div>
+  <div class="nav-label">Menu</div>
+  <a href="/dashboard/" class="nav-item">▦ Dashboard</a>
+  <a href="/orders/" class="nav-item active">📋 Orders</a>
+  <a href="/configure/" class="nav-item">⚙️ Configure</a>
+  <div class="sidebar-bottom">
+    <div class="user-pill">
+      <div class="avatar">RP</div>
+      <div class="user-info">
+        <div class="name">Ramprasad</div>
+        <div class="role">Admin</div>
+      </div>
+    </div>
+  </div>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
     <div>
-        <a href="/dashboard/" style="color:white;margin-right:20px;text-decoration:none;">Dashboard</a>
-        <a href="/orders/" style="color:white;text-decoration:none;">Orders</a>
+      <h1>Customer Orders</h1>
+      <p>Manage and track all customer orders</p>
     </div>
+    <div style="display:flex;gap:10px">
+      <!-- toggles the CSV box open/close -->
+      <button type="button" class="btn btn-secondary"
+        onclick="document.getElementById('csvBox').classList.toggle('show')">
+        📤 Upload CSV
+      </button>
+      <button type="button" class="btn btn-primary" onclick="openModal()">
+        ＋ Create Order
+      </button>
+    </div>
+  </div>
+
+  <!-- CSV UPLOAD BOX -->
+  <div class="csv-box" id="csvBox">
+    <div class="csv-box-inner">
+      <div class="csv-title">📄 Upload Orders CSV</div>
+      <div class="csv-controls">
+
+        <!-- Hidden real file input -->
+        <input type="file" id="csvFile" accept=".csv"
+          style="display:none" onchange="showFileName(this)">
+
+        <!-- Styled button that opens file picker -->
+        <button type="button" class="csv-choose-btn"
+          onclick="document.getElementById('csvFile').click()">
+          📁 Choose File
+        </button>
+
+        <!-- Shows selected filename -->
+        <span class="csv-filename" id="csvFileName">No file chosen</span>
+
+        <!-- Upload button — passes itself into uploadCSV -->
+        <button type="button" class="btn btn-primary"
+          onclick="uploadCSV(this)">
+          Upload
+        </button>
+
+        <!-- Cancel -->
+        <button type="button" class="btn btn-secondary"
+          onclick="document.getElementById('csvBox').classList.remove('show')">
+          Cancel
+        </button>
+
+      </div>
+      <div class="csv-hint">
+        Required columns: first_name, last_name, email, phone, street_address, city, state, postal_code, country, product, quantity, unit_price, status, created_by
+      </div>
+    </div>
+  </div>
+
+  <!-- CONTENT -->
+  <div class="content">
+
+    <!-- STATS -->
+    <div class="stats-row">
+      <div class="stat-card">
+        <div class="stat-label">Total Orders</div>
+        <div class="stat-value" id="stat-total">—</div>
+        <div class="stat-sub">All time</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Completed</div>
+        <div class="stat-value" id="stat-completed" style="color:var(--success)">—</div>
+        <div class="stat-sub">Fulfilled</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Pending</div>
+        <div class="stat-value" id="stat-pending" style="color:var(--warning)">—</div>
+        <div class="stat-sub">Awaiting action</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-label">Total Revenue</div>
+        <div class="stat-value" id="stat-revenue" style="color:var(--accent)">—</div>
+        <div class="stat-sub">All products</div>
+      </div>
+    </div>
+
+    <!-- TABLE -->
+    <div class="table-card">
+      <div class="table-header">
+        <h2>All Orders</h2>
+        <div class="table-header-right">
+          <div class="search-box">
+            <span>🔍</span>
+            <input type="text" id="searchInput"
+              placeholder="Search orders..." oninput="filterTable()">
+          </div>
+          <select class="btn btn-secondary btn-sm"
+            id="statusFilter" onchange="filterTable()">
+            <option value="">All Status</option>
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+        </div>
+      </div>
+      <div class="tbl-wrap">
+        <table>
+          <thead>
+            <tr>
+              <th>#</th><th>Customer</th><th>Product</th><th>Qty</th>
+              <th>Unit Price</th><th>Total</th><th>Status</th>
+              <th>Created By</th><th>Date</th><th></th>
+            </tr>
+          </thead>
+          <tbody id="ordersBody">
+            <tr><td colspan="10">
+              <div class="empty-state">
+                <div class="empty-icon">⏳</div>
+                <h3>Loading...</h3>
+              </div>
+            </td></tr>
+          </tbody>
+        </table>
+      </div>
+      <div class="table-footer">
+        <span class="page-info" id="pageInfo">—</span>
+      </div>
+    </div>
+  </div>
+</main>
+
+<!-- CREATE / EDIT MODAL -->
+<div class="overlay" id="modalOverlay">
+  <div class="modal">
+    <div class="modal-header">
+      <div>
+        <h3 id="modalTitle">Create Order</h3>
+        <p id="modalSub">Fill in the details below</p>
+      </div>
+      <button class="close-btn" onclick="closeModal()">×</button>
+    </div>
+    <div class="modal-body">
+      <div class="section-divider"><span>Customer Information</span></div>
+      <div class="form-grid">
+        <div class="form-group"><label>First Name <span class="req">*</span></label><input type="text" id="f_first_name" placeholder="Ramprasad"><span class="err-msg" id="e_first_name">Please fill the field</span></div>
+        <div class="form-group"><label>Last Name <span class="req">*</span></label><input type="text" id="f_last_name" placeholder="S M"><span class="err-msg" id="e_last_name">Please fill the field</span></div>
+        <div class="form-group"><label>Email ID <span class="req">*</span></label><input type="email" id="f_email" placeholder="ramprasad@example.com"><span class="err-msg" id="e_email">Please fill the field</span></div>
+        <div class="form-group"><label>Phone Number <span class="req">*</span></label><input type="text" id="f_phone" placeholder="+91 98765 43210"><span class="err-msg" id="e_phone">Please fill the field</span></div>
+        <div class="form-group full"><label>Street Address <span class="req">*</span></label><input type="text" id="f_street_address" placeholder="12/3 Main Street"><span class="err-msg" id="e_street_address">Please fill the field</span></div>
+        <div class="form-group"><label>City <span class="req">*</span></label><input type="text" id="f_city" placeholder="Erode"><span class="err-msg" id="e_city">Please fill the field</span></div>
+        <div class="form-group"><label>State / Province <span class="req">*</span></label><input type="text" id="f_state" placeholder="TN"><span class="err-msg" id="e_state">Please fill the field</span></div>
+        <div class="form-group"><label>Postal Code <span class="req">*</span></label><input type="text" id="f_postal_code" placeholder="638009"><span class="err-msg" id="e_postal_code">Please fill the field</span></div>
+        <div class="form-group"><label>Country <span class="req">*</span></label>
+          <select id="f_country">
+            <option value="">Select country</option>
+            <option value="IND">India</option>
+            <option value="US">United States</option>
+            <option value="CA">Canada</option>
+            <option value="AU">Australia</option>
+            <option value="SG">Singapore</option>
+            <option value="HK">Hong Kong</option>
+          </select>
+          <span class="err-msg" id="e_country">Please fill the field</span>
+        </div>
+      </div>
+
+      <div class="section-divider"><span>Order Information</span></div>
+      <div class="form-grid">
+        <div class="form-group full"><label>Choose Product <span class="req">*</span></label>
+          <select id="f_product">
+            <option value="">Select a product</option>
+            <option value="fiber_300">Fiber Internet 300 Mbps</option>
+            <option value="5g_unlimited">5G Unlimited Mobile Plan</option>
+            <option value="fiber_1gb">Fiber Internet 1 Gbps</option>
+            <option value="business_500">Business Internet 500 Mbps</option>
+            <option value="voip_corporate">VoIP Corporate Package</option>
+          </select>
+          <span class="err-msg" id="e_product">Please fill the field</span>
+        </div>
+        <div class="form-group"><label>Quantity <span class="req">*</span></label><input type="number" id="f_quantity" value="1" min="1" oninput="calcTotal()"><span class="err-msg" id="e_quantity">Please fill the field</span></div>
+        <div class="form-group"><label>Unit Price <span class="req">*</span></label>
+          <div class="input-prefix">
+            <span class="prefix-sym">₹</span>
+            <input type="number" id="f_unit_price" placeholder="0.00" step="0.01" min="0" oninput="calcTotal()">
+          </div>
+          <span class="err-msg" id="e_unit_price">Please fill the field</span>
+        </div>
+        <div class="form-group"><label>Total Amount</label>
+          <div class="input-prefix">
+            <span class="prefix-sym">₹</span>
+            <input type="text" id="f_total_amount" readonly value="0.00">
+          </div>
+        </div>
+        <div class="form-group"><label>Status <span class="req">*</span></label>
+          <select id="f_status">
+            <option value="pending">Pending</option>
+            <option value="in_progress">In Progress</option>
+            <option value="completed">Completed</option>
+          </select>
+          <span class="err-msg" id="e_status">Please fill the field</span>
+        </div>
+        <div class="form-group"><label>Created By <span class="req">*</span></label>
+          <select id="f_created_by">
+            <option value="">Select person</option>
+            <option value="Ramprasad">Mr. Ramprasad</option>
+            <option value="Sabari">Mr. Sabari</option>
+            <option value="Prabha">Ms. Prabha</option>
+            <option value="Sanjay">Mr. Sanjay</option>
+          </select>
+          <span class="err-msg" id="e_created_by">Please fill the field</span>
+        </div>
+      </div>
+    </div>
+    <div class="modal-footer">
+      <button class="btn btn-secondary" onclick="closeModal()">Cancel</button>
+      <button class="btn btn-primary" onclick="submitOrder()" id="submitBtn">Submit Order</button>
+    </div>
+  </div>
 </div>
-<br>
-<div class="container">
 
-<div class="card">
-
-<h2>Upload Orders CSV</h2>
-
-<form action="/api/upload-orders/" method="post" enctype="multipart/form-data" class="upload-box">
-    {% csrf_token %}
-<input type="file" id="csvFile" name="file" required>
-<button type="submit">Upload CSV</button>
-</form>
-
+<!-- DELETE CONFIRM -->
+<div class="overlay" id="confirmOverlay">
+  <div class="confirm-box">
+    <div class="confirm-icon">🗑️</div>
+    <h3>Delete this order?</h3>
+    <p>This will permanently remove the order. This action cannot be undone.</p>
+    <div class="confirm-actions">
+      <button class="btn btn-secondary" onclick="closeConfirm()">Cancel</button>
+      <button class="btn btn-danger" onclick="confirmDelete()">Yes, Delete</button>
+    </div>
+  </div>
 </div>
 
+<!-- CONTEXT MENU -->
+<div class="ctx-menu" id="ctxMenu">
+  <div class="ctx-item" onclick="ctxEdit()">✏️ &nbsp;Edit Order</div>
+  <div class="ctx-item delete" onclick="ctxDelete()">🗑️ &nbsp;Delete</div>
+</div>
 
-<div class="card">
+<script>
+const MANDATORY = ['first_name','last_name','email','phone','street_address','city','state','postal_code','country','product','quantity','unit_price','status','created_by'];
+const STATUS_L = {pending:'Pending', in_progress:'In Progress', completed:'Completed'};
+const CREATED_L = {michael_harris:'Mr. Michael Harris', ryan_cooper:'Mr. Ryan Cooper', olivia_carter:'Ms. Olivia Carter', lucas_martin:'Mr. Lucas Martin'};
+const PRODUCT_L = {fiber_300:'Fiber Internet 300 Mbps', '5g_unlimited':'5G Unlimited Mobile Plan', fiber_1gb:'Fiber Internet 1 Gbps', business_500:'Business Internet 500 Mbps', voip_corporate:'VoIP Corporate Package'};
 
-<h2>Orders List</h2>
+let allOrders = [], editingId = null, deleteId = null, ctxTarget = null;
 
-<table>
+// ── Load orders ───────────────────────────────────────────────────────────────
+function loadOrders() {
+  fetch('/api/orders/')
+    .then(r => r.json())
+    .then(data => { allOrders = data; renderTable(data); updateStats(data); })
+    .catch(() => showToast('Failed to load orders', 'error'));
+}
 
-<thead>
-<tr>
-<th>Customer</th>
-<th>Product</th>
-<th>Status</th>
-<th>Amount</th>
-<th>Date</th>
-</tr>
-</thead>
+function updateStats(o) {
+  document.getElementById('stat-total').textContent = o.length;
+  document.getElementById('stat-completed').textContent = o.filter(x => x.status === 'completed').length;
+  document.getElementById('stat-pending').textContent = o.filter(x => x.status === 'pending').length;
+  const rev = o.reduce((s, x) => s + parseFloat(x.total_amount || 0), 0);
+  document.getElementById('stat-revenue').textContent = '$' + rev.toLocaleString('en-US', {maximumFractionDigits: 0});
+}
 
-{% for order in orders %}
+function renderTable(orders) {
+  const tb = document.getElementById('ordersBody');
+  document.getElementById('pageInfo').textContent = `Showing ${orders.length} order${orders.length !== 1 ? 's' : ''}`;
+  if (!orders.length) {
+    tb.innerHTML = `<tr><td colspan="10"><div class="empty-state"><div class="empty-icon">📭</div><h3>No orders found</h3><p>Click "Create Order" to add your first order</p></div></td></tr>`;
+    return;
+  }
+  tb.innerHTML = orders.map((o, i) => `
+    <tr>
+      <td style="color:var(--text-muted);font-size:12px">${i + 1}</td>
+      <td><div class="customer-name">${o.first_name} ${o.last_name}</div><div class="customer-email">${o.email}</div></td>
+      <td>${o.product_display || PRODUCT_L[o.product] || o.product}</td>
+      <td style="font-weight:600">${o.quantity}</td>
+      <td>$${parseFloat(o.unit_price).toFixed(2)}</td>
+      <td style="font-weight:700;color:var(--text-primary)">$${parseFloat(o.total_amount).toFixed(2)}</td>
+      <td><span class="badge badge-${o.status}">${STATUS_L[o.status] || o.status}</span></td>
+      <td style="font-size:12px">${CREATED_L[o.created_by] || o.created_by}</td>
+      <td style="color:var(--text-muted);font-size:12px">${new Date(o.created_at).toLocaleDateString('en-US', {month:'short', day:'numeric', year:'numeric'})}</td>
+      <td><button class="ctx-btn" onclick="showCtx(event,${o.id})">⋮</button></td>
+    </tr>`).join('');
+}
 
-<tr>
-<td>{{order.first_name}} {{order.last_name}}</td>
-<td>{{order.product}}</td>
-<td>{{order.quantity}}</td>
-<td>{{order.total_amount}}</td>
-<td>
-    <span class="status-{{order.status}}">{{order.status}}</span>
-</td>
-</tr>
+// ── Filter ────────────────────────────────────────────────────────────────────
+function filterTable() {
+  const q = document.getElementById('searchInput').value.toLowerCase();
+  const s = document.getElementById('statusFilter').value;
+  renderTable(allOrders.filter(o =>
+    (!q || `${o.first_name} ${o.last_name} ${o.email} ${o.product}`.toLowerCase().includes(q)) &&
+    (!s || o.status === s)
+  ));
+}
 
-{% endfor %}
+// ── CSV Upload ────────────────────────────────────────────────────────────────
+function showFileName(input) {
+  const span = document.getElementById('csvFileName');
+  if (input.files.length) {
+    span.textContent = input.files[0].name;
+    span.style.color = 'var(--success)';
+  } else {
+    span.textContent = 'No file chosen';
+    span.style.color = 'var(--text-muted)';
+  }
+}
 
-</table>
+function uploadCSV(btn) {
+  const fileInput = document.getElementById('csvFile');
+  if (!fileInput.files.length) {
+    showToast('Please choose a CSV file first', 'error');
+    return;
+  }
+  const formData = new FormData();
+  formData.append('file', fileInput.files[0]);
 
+  const original = btn.textContent;
+  btn.textContent = 'Uploading...';
+  btn.disabled = true;
+
+  fetch('/api/upload-orders/', {
+    method: 'POST',
+    body: formData,
+    headers: { 'X-CSRFToken': getCookie('csrftoken') }
+  })
+  .then(r => {
+    if (r.ok || r.redirected) {
+      showToast('CSV uploaded successfully!', 'success');
+      document.getElementById('csvBox').classList.remove('show');
+      fileInput.value = '';
+      document.getElementById('csvFileName').textContent = 'No file chosen';
+      document.getElementById('csvFileName').style.color = 'var(--text-muted)';
+      loadOrders();
+    } else {
+      return r.json().then(d => { throw new Error(d.error || 'Upload failed'); });
+    }
+  })
+  .catch(err => showToast(err.message || 'Upload failed', 'error'))
+  .finally(() => { btn.textContent = original; btn.disabled = false; });
+}
+
+// ── Context menu ──────────────────────────────────────────────────────────────
+function showCtx(e, id) {
+  e.stopPropagation();
+  ctxTarget = id;
+  const m = document.getElementById('ctxMenu');
+  m.style.top = Math.min(e.clientY, window.innerHeight - 100) + 'px';
+  m.style.left = Math.min(e.clientX, window.innerWidth - 160) + 'px';
+  m.classList.add('show');
+}
+document.addEventListener('click', () => document.getElementById('ctxMenu').classList.remove('show'));
+function ctxEdit() { document.getElementById('ctxMenu').classList.remove('show'); openModal(ctxTarget); }
+function ctxDelete() { document.getElementById('ctxMenu').classList.remove('show'); deleteId = ctxTarget; document.getElementById('confirmOverlay').classList.add('show'); }
+function closeConfirm() { document.getElementById('confirmOverlay').classList.remove('show'); deleteId = null; }
+function confirmDelete() {
+  fetch(`/api/orders/${deleteId}/delete/`, { method: 'DELETE', headers: { 'X-CSRFToken': getCookie('csrftoken') } })
+    .then(() => { closeConfirm(); loadOrders(); showToast('Order deleted', 'success'); })
+    .catch(() => showToast('Delete failed', 'error'));
+}
+
+// ── Modal ─────────────────────────────────────────────────────────────────────
+function openModal(id = null) {
+  editingId = id; clearForm(); clearErrors();
+  document.getElementById('modalTitle').textContent = id ? 'Edit Order' : 'Create Order';
+  document.getElementById('modalSub').textContent = id ? 'Update the order details below' : 'Fill in the details below to create a new order';
+  document.getElementById('submitBtn').textContent = id ? 'Save Changes' : 'Submit Order';
+  if (id) {
+    const o = allOrders.find(x => x.id === id);
+    if (o) { MANDATORY.forEach(f => { const el = document.getElementById('f_' + f); if (el && o[f] !== undefined) el.value = o[f]; }); calcTotal(); }
+  }
+  document.getElementById('modalOverlay').classList.add('show');
+}
+function closeModal() { document.getElementById('modalOverlay').classList.remove('show'); editingId = null; }
+function clearForm() {
+  MANDATORY.forEach(f => { const el = document.getElementById('f_' + f); if (!el) return; if (el.tagName === 'SELECT') el.selectedIndex = 0; else el.value = f === 'quantity' ? '1' : ''; });
+  document.getElementById('f_status').value = 'pending';
+  document.getElementById('f_total_amount').value = '0.00';
+}
+function clearErrors() {
+  MANDATORY.forEach(f => { document.getElementById('f_' + f)?.classList.remove('error'); const e = document.getElementById('e_' + f); if (e) e.classList.remove('show'); });
+}
+function calcTotal() {
+  const q = parseFloat(document.getElementById('f_quantity').value) || 0;
+  const p = parseFloat(document.getElementById('f_unit_price').value) || 0;
+  document.getElementById('f_total_amount').value = (q * p).toFixed(2);
+}
+
+function submitOrder() {
+  clearErrors(); let valid = true;
+  MANDATORY.forEach(f => {
+    const el = document.getElementById('f_' + f);
+    if (!el || !el.value || !el.value.trim()) { el?.classList.add('error'); const e = document.getElementById('e_' + f); if (e) e.classList.add('show'); valid = false; }
+  });
+  if (parseInt(document.getElementById('f_quantity').value) < 1) {
+    document.getElementById('f_quantity').classList.add('error');
+    document.getElementById('e_quantity').classList.add('show');
+    valid = false;
+  }
+  if (!valid) return;
+  const payload = {};
+  MANDATORY.forEach(f => { const el = document.getElementById('f_' + f); if (el) payload[f] = el.value; });
+  payload.quantity = parseInt(payload.quantity);
+  payload.unit_price = parseFloat(payload.unit_price);
+  const url = editingId ? `/api/orders/${editingId}/update/` : '/api/orders/create/';
+  const method = editingId ? 'PUT' : 'POST';
+  const btn = document.getElementById('submitBtn');
+  btn.textContent = 'Saving...'; btn.disabled = true;
+  fetch(url, { method, headers: { 'Content-Type': 'application/json', 'X-CSRFToken': getCookie('csrftoken') }, body: JSON.stringify(payload) })
+    .then(r => r.json())
+    .then(data => {
+      btn.disabled = false;
+      if (data.id) { closeModal(); loadOrders(); showToast(editingId ? 'Order updated!' : 'Order created!', 'success'); }
+      else { btn.textContent = editingId ? 'Save Changes' : 'Submit Order'; alert('Error: ' + JSON.stringify(data)); }
+    })
+    .catch(() => { btn.disabled = false; btn.textContent = editingId ? 'Save Changes' : 'Submit Order'; showToast('Request failed', 'error'); });
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function showToast(msg, type = 'success') {
+  const t = document.createElement('div');
+  t.className = `toast toast-${type}`;
+  t.innerHTML = `<span>${type === 'success' ? '✅' : '❌'}</span> ${msg}`;
+  document.body.appendChild(t);
+  setTimeout(() => { t.classList.add('hide'); setTimeout(() => t.remove(), 300); }, 2500);
+}
+function getCookie(name) {
+  const v = document.cookie.match('(^|;)\\s*' + name + '\\s*=\\s*([^;]+)');
+  return v ? v.pop() : '';
+}
+
+document.getElementById('modalOverlay').addEventListener('click', function(e) { if (e.target === this) closeModal(); });
+document.getElementById('confirmOverlay').addEventListener('click', function(e) { if (e.target === this) closeConfirm(); });
+
+loadOrders();
+</script>
 </body>
 </html>

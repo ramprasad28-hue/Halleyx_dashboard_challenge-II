@@ -1,242 +1,459 @@
 {% load static %}
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
-    <title>Dashboard</title>
-
-    <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
-
-    <link href="https://cdn.jsdelivr.net/npm/gridstack@9.2.0/dist/gridstack.min.css" rel="stylesheet"/>
-    <script src="https://cdn.jsdelivr.net/npm/gridstack@9.2.0/dist/gridstack-all.js"></script>
-
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Dashboard — Halleyx</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+<link href="https://fonts.googleapis.com/css2?family=Plus+Jakarta+Sans:wght@400;500;600;700&display=swap" rel="stylesheet">
 <style>
+:root {
+  --bg: #0f1117;
+  --sidebar-bg: #13151c;
+  --surface: #1a1d27;
+  --surface2: #21263a;
+  --border: rgba(255,255,255,0.07);
+  --border2: rgba(255,255,255,0.12);
+  --text-primary: #f0f2f8;
+  --text-secondary: #8b92a9;
+  --text-muted: #555e7a;
+  --accent: #4f7bff;
+  --accent-glow: rgba(79,123,255,0.15);
+  --success: #22c55e;
+  --success-bg: rgba(34,197,94,0.1);
+  --warning: #f59e0b;
+  --warning-bg: rgba(245,158,11,0.1);
+  --danger: #ef4444;
+  --font: 'Plus Jakarta Sans', sans-serif;
+  --sidebar-w: 220px;
+  --radius: 10px;
+  --radius-lg: 14px;
+}
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { font-family: var(--font); background: var(--bg); color: var(--text-primary); display: flex; min-height: 100vh; font-size: 14px; }
 
-body{
-    background:#f4f6f9;
-    font-family:Arial;
-    margin:0;
-}
+/* SIDEBAR */
+.sidebar { width: var(--sidebar-w); background: var(--sidebar-bg); border-right: 1px solid var(--border); display: flex; flex-direction: column; position: fixed; top: 0; left: 0; height: 100vh; z-index: 100; padding: 0 12px; }
+.sidebar-logo { padding: 22px 8px 20px; border-bottom: 1px solid var(--border); margin-bottom: 12px; }
+.logo-text { font-size: 18px; font-weight: 700; display: flex; align-items: center; gap: 10px; }
+.logo-icon { width: 32px; height: 32px; background: var(--accent); border-radius: 8px; display: flex; align-items: center; justify-content: center; font-size: 16px; }
+.nav-label { font-size: 10px; font-weight: 700; color: var(--text-muted); text-transform: uppercase; letter-spacing: 1px; padding: 8px 8px 6px; }
+.nav-item { display: flex; align-items: center; gap: 10px; padding: 9px 10px; border-radius: var(--radius); color: var(--text-secondary); text-decoration: none; font-size: 13px; font-weight: 500; transition: all .18s; margin-bottom: 2px; }
+.nav-item:hover { background: rgba(255,255,255,0.05); color: var(--text-primary); }
+.nav-item.active { background: var(--accent-glow); color: var(--accent); }
 
-.navbar{
-    background:#1f2937;
-    padding:15px 30px;
-}
+/* MAIN */
+.main { margin-left: var(--sidebar-w); flex: 1; display: flex; flex-direction: column; }
 
-.navbar a{
-    color:white;
-    text-decoration:none;
-    margin-right:25px;
-    font-weight:bold;
-}
+/* TOPBAR */
+.topbar { background: var(--sidebar-bg); border-bottom: 1px solid var(--border); padding: 0 28px; height: 60px; display: flex; align-items: center; justify-content: space-between; position: sticky; top: 0; z-index: 50; }
+.topbar h1 { font-size: 16px; font-weight: 700; }
+.topbar p { font-size: 12px; color: var(--text-muted); margin-top: 2px; }
+.topbar-right { display: flex; gap: 10px; align-items: center; }
+.btn { display: inline-flex; align-items: center; gap: 6px; padding: 8px 16px; border-radius: var(--radius); border: none; cursor: pointer; font-size: 13px; font-weight: 600; font-family: var(--font); transition: all .18s; text-decoration: none; }
+.btn-primary { background: var(--accent); color: white; }
+.btn-primary:hover { background: #3d67f0; transform: translateY(-1px); }
+.select-filter { background: var(--surface2); border: 1px solid var(--border2); color: var(--text-primary); padding: 8px 12px; border-radius: var(--radius); font-family: var(--font); font-size: 13px; cursor: pointer; outline: none; }
 
-.dashboard-container{
-    padding:30px;
-}
+/* CONTENT */
+.content { padding: 24px 28px; }
 
-.grid-stack-item-content{
-    background:white;
-    border-radius:10px;
-    padding:20px;
-    box-shadow:0 4px 10px rgba(0,0,0,0.08);
-    text-align: center;
-    
-}
-.grid-stack-item-content h3{
-    color:#6b7280;
-    font-size: 14px;
-}
-.grid-stack-item-content p{
-    font-size: 28px;
-    font-weight: bold;
-    margin-top: 8px;
-}
+/* EMPTY STATE */
+.empty-state { display: flex; flex-direction: column; align-items: center; justify-content: center; min-height: 60vh; text-align: center; color: var(--text-muted); }
+.empty-icon { font-size: 48px; margin-bottom: 16px; opacity: .4; }
+.empty-state h2 { font-size: 18px; font-weight: 700; color: var(--text-secondary); margin-bottom: 8px; }
+.empty-state p { font-size: 13px; margin-bottom: 20px; line-height: 1.6; }
 
-.kpi{
-    font-size:28px;
-    font-weight:bold;
-    margin-top:10px;
-}
+/* WIDGET GRID */
+.widgets-grid { display: grid; grid-template-columns: repeat(12, 1fr); gap: 16px; }
 
-h3{
-    margin:0;
-    color:#555;
-}
+/* WIDGET CARD */
+.widget-card { background: var(--surface); border: 1px solid var(--border); border-radius: var(--radius-lg); padding: 20px; transition: border-color .18s; overflow: hidden; }
+.widget-card:hover { border-color: var(--border2); }
+.widget-card-title { font-size: 13px; font-weight: 700; color: var(--text-primary); margin-bottom: 4px; }
+.widget-card-sub { font-size: 11px; color: var(--text-muted); margin-bottom: 16px; }
 
-canvas{
-    width:fit-content !important;
+/* KPI */
+.kpi-value { font-size: 36px; font-weight: 700; line-height: 1; margin-top: 8px; }
+.kpi-label { font-size: 11px; color: var(--text-muted); margin-top: 6px; }
+
+/* CHART CONTAINER */
+.chart-container { position: relative; height: 260px; }
+
+/* TABLE */
+.widget-table { width: 100%; border-collapse: collapse; margin-top: 4px; }
+.widget-table th { padding: 9px 12px; text-align: left; font-size: 11px; font-weight: 700; text-transform: uppercase; letter-spacing: .5px; color: white; }
+.widget-table td { padding: 10px 12px; font-size: 13px; border-bottom: 1px solid var(--border); color: var(--text-secondary); }
+.widget-table tr:last-child td { border-bottom: none; }
+.widget-table tr:hover td { background: rgba(255,255,255,0.02); }
+
+/* STATUS BADGES */
+.badge { display: inline-flex; align-items: center; gap: 4px; padding: 2px 8px; border-radius: 20px; font-size: 11px; font-weight: 700; }
+.badge::before { content: ''; width: 5px; height: 5px; border-radius: 50%; }
+.badge-pending { background: var(--warning-bg); color: var(--warning); }
+.badge-pending::before { background: var(--warning); }
+.badge-in_progress { background: var(--accent-glow); color: var(--accent); }
+.badge-in_progress::before { background: var(--accent); }
+.badge-completed { background: var(--success-bg); color: var(--success); }
+.badge-completed::before { background: var(--success); }
+
+/* LOADING SKELETON */
+.skeleton { background: linear-gradient(90deg, var(--surface2) 25%, rgba(255,255,255,0.05) 50%, var(--surface2) 75%); background-size: 200% 100%; animation: shimmer 1.5s infinite; border-radius: 6px; }
+@keyframes shimmer { 0% { background-position: 200% 0 } 100% { background-position: -200% 0 } }
+
+/* TOAST */
+.toast { position: fixed; bottom: 24px; right: 24px; z-index: 9999; background: var(--surface); border: 1px solid var(--border2); border-radius: var(--radius); padding: 12px 18px; display: flex; align-items: center; gap: 10px; font-size: 13px; font-weight: 500; box-shadow: 0 8px 32px rgba(0,0,0,0.4); animation: slideUp .2s ease; transition: opacity .3s; }
+.toast.hide { opacity: 0; }
+.toast-success { border-left: 3px solid var(--success); }
+.toast-error { border-left: 3px solid var(--danger); }
+@keyframes slideUp { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:translateY(0) } }
+
+/* RESPONSIVE */
+@media (max-width: 1024px) {
+  .widgets-grid { grid-template-columns: repeat(8, 1fr); }
 }
-.gird-stack{
-    margin-top: 20px;
-}
-#revenue,#orders,#avg{
-    font-size: 28px;
-    font-weight: bold;
-    margin-top: 10px;
-}
-button{
-    background: #2563eb;
-    color:white;
-    border:none;
-    padding: 8px 16px;
-    border-radius: 6px;
-    cursor: pointer;
-    margin-left: 10px;
-    align-items: center;
-}
-button:hover{
-    background: rgb(7, 92, 102);
-}
-.kpi-card{
-    padding: 20px;
-    border-radius: 10px;
-    color: white;
-    font-weight: bold;
-}
-.kpi-card p{
-    font-size: 32px;
-    font-weight: bold;
-    margin-top: 10px;
-}
-.revenue{
-    background: #16a34a;
-}
-.orders{
-    background: #2563eb;
-}
-.avg{
-    background:#ea580c;
+@media (max-width: 640px) {
+  .main { margin-left: 0; }
+  .sidebar { display: none; }
+  .widgets-grid { grid-template-columns: repeat(4, 1fr); }
+  .content { padding: 16px; }
 }
 </style>
 </head>
-
 <body>
-<div style="background:#1f2937;padding:15px;color:white;display:flex;justify-content:space-between;">
-<div style="font-weight:bold;font-size:18px;">
-        <h1 style="margin:10px;">📊 Sales Analytics</h1>
-    </div>
 
+<!-- SIDEBAR -->
+<aside class="sidebar">
+  <div class="sidebar-logo">
+    <div class="logo-text"><div class="logo-icon">📊</div>Halleyx</div>
+  </div>
+  <div class="nav-label">Menu</div>
+  <a href="/dashboard/" class="nav-item active">▦ Dashboard</a>
+  <a href="/orders/" class="nav-item">📋 Orders</a>
+  <a href="/configure/" class="nav-item">⚙️ Configure</a>
+</aside>
+
+<!-- MAIN -->
+<main class="main">
+
+  <!-- TOPBAR -->
+  <div class="topbar">
     <div>
-        <a href="/dashboard/" style="color:white;margin-right:20px;text-decoration:none; margin: 10px;">Dashboard</a>
-        <a href="/orders/" style="color:white;text-decoration:none;margin: 10px;">Orders</a>
+      <h1>Dashboard</h1>
+      <p>Sales analytics overview</p>
     </div>
-</div>
-<!-- <label for="dateFilter">Show data for:</label> -->
-<!-- 
-<select id="dateFilter">
-    <option value="all">All time</option>
-    <option value="today">Today</option>
-    <option value="7">Last 7 days</option>
-    <option value="30">Last 30 days</option>
-    <option value="90">Last 90 days</option>
-</select> -->
-<br>
-<button onclick="toggleEdit()">Configure Dashboard</button>
-<br>
-<div class="grid-stack">
-
-<div class="grid-stack-item" gs-w="4" gs-h="2">
-<div class="grid-stack-item-content kpi-card revenue">
-
-<h3 style="color: white;">Total Revenue</h3>
-<p id="revenue" class="kpi">0</p>
-
-</div>
-</div>
-
-<div class="grid-stack-item" gs-w="4" gs-h="2">
-<div class="grid-stack-item-content kpi-card orders">
-
-<h3 style="color: white;">Total Order</h3>
-<p id="orders" class="kpi">0</p>
-
-</div>
-</div>
-
-<div class="grid-stack-item" gs-w="4" gs-h="2">
-<div class="grid-stack-item-content kpi-card avg">
-
-<h3 style="color: white;">Average Order Value</h3>
-<p id="avg" class="kpi">0</p>
-
-</div>
-</div>
-
-<div class="grid-stack-item" gs-w="6" gs-h="4">
-<div class="grid-stack-item-content">
-    
-    <canvas id="productChart" ></canvas>
-    
-</div>
-</div>
-
-<div class="grid-stack-item" gs-w="6" gs-h="4">
-    <div class="grid-stack-item-content">
-        
-        <canvas id="statusChart" style="background-color: [
-            '#3b82f6',
-            '#22c55e',
-            '#f59e0b',
-            '#ef4444',
-            '#8b5cf6'
-        ]"></canvas>
-        
+    <div class="topbar-right">
+      <select class="select-filter" id="dateFilter" onchange="applyFilter()">
+        <option value="all">All time</option>
+        <option value="today">Today</option>
+        <option value="7">Last 7 days</option>
+        <option value="30">Last 30 days</option>
+        <option value="90">Last 90 days</option>
+      </select>
+      <a href="/configure/" class="btn btn-primary">⚙️ Configure</a>
     </div>
-</div>
+  </div>
 
-</div>
+  <!-- CONTENT -->
+  <div class="content" id="dashboardContent">
+    <!-- filled by JS -->
+    <div style="display:flex;align-items:center;justify-content:center;min-height:60vh">
+      <div style="text-align:center;color:var(--text-muted)">
+        <div style="font-size:32px;margin-bottom:12px">⏳</div>
+        <div style="font-size:14px">Loading dashboard...</div>
+      </div>
+    </div>
+  </div>
+
+</main>
+
 <script>
-    
-document.addEventListener("DOMContentLoaded", function () {
+// ── State ─────────────────────────────────────────────────────────────────────
+let orderData = [];
+let chartInstances = {};
+let savedConfigs = {};
 
-    const grid = GridStack.init({
-        column: 12,
-        cellHeight: 80,
-        float: true
-    });
-
-    grid.on('change', function(){
-
-        const layout = grid.save();
-
-        fetch("/api/save-layout/",{
-            method:"POST",
-            headers:{
-                "Content-Type":"application/json"
-            },
-            body:JSON.stringify(layout)
-        });
-
-    });
-
-});
-let editMode = false;
-
-function toggleEdit(){
-
-    editMode = !editMode;
-    
-    const grid = document.querySelector('.grid-stack').gridstack;
-    
-    if(editMode){
-        grid.enableMove(true);
-        grid.enableResize(true);
-        alert("Dashboard edit mode enabled");
+// ── Boot ──────────────────────────────────────────────────────────────────────
+document.addEventListener('DOMContentLoaded', function () {
+  // Load orders + layout in parallel
+  Promise.all([
+    fetch('/api/orders/').then(r => r.json()),
+    fetch('/api/load-layout/').then(r => r.json())
+  ])
+  .then(([orders, layout]) => {
+    orderData = orders;
+    if (layout && layout.configs && Object.keys(layout.configs).length > 0) {
+      savedConfigs = layout.configs;
+      renderDashboard(savedConfigs);
     } else {
-        grid.enableMove(false);
-        grid.enableResize(false);
-        alert("Dashboard locked");
+      showEmptyState();
     }
-    
+  })
+  .catch(() => showEmptyState());
+});
+
+// ── Apply date filter — re-render all widgets ─────────────────────────────────
+function applyFilter() {
+  const range = document.getElementById('dateFilter').value;
+
+  // Destroy all existing charts
+  Object.values(chartInstances).forEach(c => c.destroy());
+  chartInstances = {};
+
+  fetch(`/api/orders/?range=${range}`)
+    .then(r => r.json())
+    .then(data => {
+      orderData = data;
+      if (Object.keys(savedConfigs).length > 0) {
+        renderDashboard(savedConfigs);
+      }
+    });
 }
 
+// ── Render full dashboard from configs ───────────────────────────────────────
+function renderDashboard(configs) {
+  // Destroy old charts
+  Object.values(chartInstances).forEach(c => c.destroy());
+  chartInstances = {};
 
+  const content = document.getElementById('dashboardContent');
+  const widgets = Object.values(configs);
 
+  // Separate KPIs from others
+  const kpis = widgets.filter(w => w.type === 'kpi');
+  const others = widgets.filter(w => w.type !== 'kpi');
 
+  let html = '';
 
+  // KPI row — always full width, up to 4 per row
+  if (kpis.length > 0) {
+    html += `<div style="display:grid;grid-template-columns:repeat(${Math.min(kpis.length, 4)},1fr);gap:16px;margin-bottom:20px">`;
+    kpis.forEach((cfg, i) => {
+      html += `<div class="widget-card" id="kpi-${i}">
+        <div class="widget-card-title">${cfg.title}</div>
+        <div class="widget-card-sub">${cfg.aggregation ? cfg.aggregation.toUpperCase() + ' · ' + cfg.metric : ''}</div>
+        <div class="kpi-value" id="kpi-val-${i}" style="color:${kpiColor(i)}">
+          <div class="skeleton" style="height:40px;width:120px"></div>
+        </div>
+        <div class="kpi-label" id="kpi-sub-${i}"></div>
+      </div>`;
+    });
+    html += `</div>`;
+  }
+
+  // Charts + Table — 2 columns
+  if (others.length > 0) {
+    html += `<div style="display:grid;grid-template-columns:repeat(auto-fill,minmax(460px,1fr));gap:16px">`;
+    others.forEach((cfg, i) => {
+      const wid = 'widget-' + i;
+      if (cfg.type === 'table') {
+        html += `<div class="widget-card" id="${wid}" style="grid-column:1/-1">
+          <div class="widget-card-title">${cfg.title}</div>
+          <div class="widget-card-sub">Orders table</div>
+          <div id="body-${wid}"><div class="skeleton" style="height:200px"></div></div>
+        </div>`;
+      } else {
+        html += `<div class="widget-card" id="${wid}">
+          <div class="widget-card-title">${cfg.title}</div>
+          <div class="widget-card-sub">${getChartSubtitle(cfg)}</div>
+          <div class="chart-container">
+            <canvas id="canvas-${wid}"></canvas>
+          </div>
+        </div>`;
+      }
+    });
+    html += `</div>`;
+  }
+
+  content.innerHTML = html;
+
+  // Now render values
+  kpis.forEach((cfg, i) => renderKPI(cfg, i));
+  others.forEach((cfg, i) => {
+    const wid = 'widget-' + i;
+    if (cfg.type === 'table') renderTable(cfg, wid);
+    else renderChart(cfg, wid);
+  });
+}
+
+// ── KPI ───────────────────────────────────────────────────────────────────────
+function renderKPI(cfg, i) {
+  let value = 0;
+  const field = cfg.metric || 'total_amount';
+
+  if (cfg.aggregation === 'count') {
+    value = orderData.length;
+  } else if (cfg.aggregation === 'sum') {
+    value = orderData.reduce((s, o) => s + parseFloat(o[field] || 0), 0);
+  } else if (cfg.aggregation === 'avg') {
+    value = orderData.length
+      ? orderData.reduce((s, o) => s + parseFloat(o[field] || 0), 0) / orderData.length
+      : 0;
+  }
+
+  const precision = cfg.precision || 0;
+  const formatted = cfg.format === 'currency'
+    ? '$' + value.toFixed(precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    : value.toFixed(precision);
+
+  const el = document.getElementById('kpi-val-' + i);
+  const sub = document.getElementById('kpi-sub-' + i);
+  if (el) el.innerHTML = formatted;
+  if (sub) sub.textContent = orderData.length + ' orders in range';
+}
+
+// ── CHART ─────────────────────────────────────────────────────────────────────
+function renderChart(cfg, wid) {
+  const canvas = document.getElementById('canvas-' + wid);
+  if (!canvas) return;
+
+  // Group data
+  const grouped = {};
+  orderData.forEach(o => {
+    const xVal = o[cfg.xAxis] || 'Unknown';
+    const yVal = parseFloat(o[cfg.yAxis]) || 0;
+    grouped[xVal] = (grouped[xVal] || 0) + yVal;
+  });
+
+  const labels = Object.keys(grouped);
+  const values = Object.values(grouped);
+  const color = cfg.color || '#4f7bff';
+
+  // Chart type mapping
+  const typeMap = {
+    bar_chart: 'bar',
+    line_chart: 'line',
+    area_chart: 'line',
+    scatter_chart: 'scatter',
+    pie_chart: 'doughnut',
+  };
+  const chartType = typeMap[cfg.type] || 'bar';
+
+  // Pie / doughnut config
+  if (cfg.type === 'pie_chart') {
+    const pieGrouped = {};
+    orderData.forEach(o => {
+      const key = o[cfg.chartData || 'status'] || 'Unknown';
+      pieGrouped[key] = (pieGrouped[key] || 0) + 1;
+    });
+    const pieLabels = Object.keys(pieGrouped);
+    const pieValues = Object.values(pieGrouped);
+    const colors = ['#4f7bff','#22c55e','#f59e0b','#ef4444','#8b5cf6','#06b6d4','#f97316'];
+
+    chartInstances[wid] = new Chart(canvas, {
+      type: 'doughnut',
+      data: {
+        labels: pieLabels,
+        datasets: [{ data: pieValues, backgroundColor: colors.slice(0, pieLabels.length), borderWidth: 0, hoverOffset: 6 }]
+      },
+      options: {
+        responsive: true, maintainAspectRatio: false, cutout: '60%',
+        plugins: {
+          legend: cfg.showLegend !== false
+            ? { position: 'bottom', labels: { color: '#8b92a9', font: { size: 11 }, padding: 12 } }
+            : { display: false }
+        }
+      }
+    });
+    return;
+  }
+
+  // Axis charts
+  const dataset = {
+    label: cfg.yAxis || 'Value',
+    data: chartType === 'scatter'
+      ? labels.map((l, i) => ({ x: i, y: values[i] }))
+      : values,
+    backgroundColor: color + 'aa',
+    borderColor: color,
+    borderWidth: 2,
+    borderRadius: chartType === 'bar' ? 6 : 0,
+    fill: cfg.type === 'area_chart',
+    tension: 0.4,
+    pointRadius: chartType === 'scatter' ? 5 : 3,
+  };
+
+  chartInstances[wid] = new Chart(canvas, {
+    type: chartType,
+    data: { labels, datasets: [dataset] },
+    options: {
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { labels: { color: '#8b92a9', font: { size: 11, family: 'Plus Jakarta Sans' } } }
+      },
+      scales: chartType !== 'scatter' ? {
+        x: { ticks: { color: '#555e7a', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } },
+        y: { ticks: { color: '#555e7a', font: { size: 11 } }, grid: { color: 'rgba(255,255,255,0.04)' } }
+      } : {}
+    }
+  });
+}
+
+// ── TABLE ─────────────────────────────────────────────────────────────────────
+function renderTable(cfg, wid) {
+  const body = document.getElementById('body-' + wid);
+  if (!body) return;
+
+  const cols = cfg.columns || ['first_name', 'last_name', 'product', 'status', 'total_amount'];
+  let data = [...orderData];
+
+  if (cfg.sortBy === 'asc') data.sort((a, b) => parseFloat(a.total_amount) - parseFloat(b.total_amount));
+  else if (cfg.sortBy === 'desc') data.sort((a, b) => parseFloat(b.total_amount) - parseFloat(a.total_amount));
+
+  data = data.slice(0, parseInt(cfg.pagination) || 10);
+
+  const headerBg = cfg.headerBg || '#54bd95';
+  const fontSize = cfg.fontSize || 14;
+
+  body.innerHTML = `
+    <div style="overflow-x:auto">
+      <table class="widget-table">
+        <thead>
+          <tr>${cols.map(c => `<th style="background:${headerBg}">${c.replace(/_/g, ' ')}</th>`).join('')}</tr>
+        </thead>
+        <tbody>
+          ${data.length
+            ? data.map(o => `<tr>${cols.map(c => `<td style="font-size:${fontSize}px">${
+                c === 'status'
+                  ? `<span class="badge badge-${o[c]}">${o[c]}</span>`
+                  : c === 'total_amount' || c === 'unit_price'
+                    ? '$' + parseFloat(o[c] || 0).toFixed(2)
+                    : c === 'created_at'
+                      ? new Date(o[c]).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'})
+                      : (o[c] !== undefined ? o[c] : '—')
+              }</td>`).join('')}</tr>`).join('')
+            : `<tr><td colspan="${cols.length}" style="text-align:center;padding:30px;color:var(--text-muted)">No data available</td></tr>`
+          }
+        </tbody>
+      </table>
+    </div>
+  `;
+}
+
+// ── Empty state ───────────────────────────────────────────────────────────────
+function showEmptyState() {
+  document.getElementById('dashboardContent').innerHTML = `
+    <div class="empty-state">
+      <div class="empty-icon">📊</div>
+      <h2>No widgets configured</h2>
+      <p>Go to Configure Dashboard to select<br>the widgets you want to see here.</p>
+      <a href="/configure/" class="btn btn-primary">⚙️ Configure Dashboard</a>
+    </div>
+  `;
+}
+
+// ── Helpers ───────────────────────────────────────────────────────────────────
+function kpiColor(i) {
+  return ['var(--success)', 'var(--accent)', 'var(--warning)', '#8b5cf6'][i % 4];
+}
+
+function getChartSubtitle(cfg) {
+  if (cfg.type === 'pie_chart') return 'Grouped by ' + (cfg.chartData || 'status');
+  if (cfg.xAxis && cfg.yAxis) return cfg.xAxis + ' vs ' + cfg.yAxis;
+  return '';
+}
 </script>
-<script src="{% static 'js/dashboard.js' %}"></script>
-
-
-
 </body>
 </html>

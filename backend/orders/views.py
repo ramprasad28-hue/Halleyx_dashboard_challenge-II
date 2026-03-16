@@ -18,6 +18,11 @@ from .models import CustomerOrder
 from datetime import timedelta
 from django.utils import timezone
 
+
+from django.shortcuts import render
+from .models import CustomerOrder
+
+
 @api_view(['GET'])
 def order_list(request):
     orders = CustomerOrder.objects.all()
@@ -74,7 +79,7 @@ def product_revenue(request):
 
 
     data = (
-        CustomerOrder.objects
+        orders
         .values('product')
         .annotate(total_revenue=Sum('total_amount'))
         .order_by('-total_revenue')
@@ -101,7 +106,7 @@ def order_status_distribution(request):
 
 
     data = (
-        CustomerOrder.objects
+        orders
         .values('status')
         .annotate(count=Count('id'))
         .order_by('-count')
@@ -137,11 +142,10 @@ def upload_orders_csv(request):
                 status=row['status']
             )
 
+        if 'admin' in request.META.get('HTTP_REFERER', ''):
+            return redirect('/admin/orders/customerorder/')
         return redirect('/orders/')
     return JsonResponse({"error": "Invalid request"}, status=400)
-
-from django.shortcuts import render
-from .models import CustomerOrder
 
 def orders_page(request):
 
@@ -171,5 +175,35 @@ def load_layout(request):
     if layout:
         return JsonResponse(layout.layout, safe=False)
 
-    return JsonResponse([])
+    return JsonResponse([],safe=False)
 
+@api_view(['POST'])
+def order_create(request):
+    serializer=CustomerOrderSerializer(data=request.data)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data,status=201)
+    return Response(serializer.errors,status=400)
+@api_view(['PUT','PATCH'])
+def order_update(request,pk):
+    try:
+        order=CustomerOrder.objects.get(pk=pk)
+    except CustomerOrder.DoesNotExist:
+        return Response({"error":"Not found"},status=404)
+    
+    serializer=CustomerOrderSerializer(order,data=request.data,partial=True)
+    if serializer.is_valid():
+        serializer.save()
+        return Response(serializer.data)
+    return Response(serializer.errors,status=400)
+@api_view(['DELETE'])
+def order_delete(request,pk):
+    try:
+        order=CustomerOrder.objects.get(pk=pk)
+    except CustomerOrder.DoesNotExist:
+        return Response({"error":"Not found"},status=404)
+    
+    order.delete()
+    return Response({'message':'Deleted'},status=204)
+def configure_page(request):
+    return render(request,"configure.html")
