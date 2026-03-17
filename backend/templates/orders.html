@@ -202,12 +202,16 @@ input[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); 
   cursor: pointer;
   padding: 4px 8px;
 }
-
 @media (max-width: 768px) {
   .sidebar {
     transform: translateX(-100%);
     transition: transform .25s ease;
     z-index: 999;
+    width: 240px !important;     /* fixed width — doesn't cover full screen */
+    height: 100vh;
+    position: fixed;
+    top: 0;
+    left: 0;
   }
   .sidebar.open {
     transform: translateX(0);
@@ -216,7 +220,7 @@ input[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); 
     margin-left: 0 !important;
   }
   .hamburger {
-    display: block;
+    display: block !important;
   }
   .sidebar-overlay {
     display: none;
@@ -229,7 +233,6 @@ input[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); 
     display: block;
   }
 }
-
 /* LIGHT THEME */
 body.light {
   --bg: #f4f6fb;
