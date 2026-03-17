@@ -230,6 +230,112 @@ input[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); 
   }
 }
 
+/* LIGHT THEME */
+body.light {
+  --bg: #f4f6fb;
+  --sidebar-bg: #ffffff;
+  --surface: #ffffff;
+  --surface2: #f0f2f8;
+  --border: rgba(0,0,0,0.08);
+  --border2: rgba(0,0,0,0.15);
+  --text-primary: #0f1117;
+  --text-secondary: #4a5068;
+  --text-muted: #8b92a9;
+  --accent: #4f7bff;
+  --accent-glow: rgba(79,123,255,0.12);
+  --success: #16a34a;
+  --success-bg: rgba(22,163,74,0.1);
+  --warning: #d97706;
+  --warning-bg: rgba(217,119,6,0.1);
+  --danger: #dc2626;
+  --danger-bg: rgba(220,38,38,0.1);
+}
+
+/* THEME BUTTON */
+.theme-btn {
+  width: 40px;
+  height: 40px;
+  border-radius: 50%;
+  border: 2px solid var(--border2);
+  background: var(--surface2);
+  cursor: pointer;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  transition: all .2s;
+  flex-shrink: 0;
+  padding: 0;
+}
+.theme-btn:hover {
+  border-color: var(--accent);
+  transform: scale(1.08);
+}
+.theme-btn:active {
+  transform: scale(0.95);
+}
+.theme-btn svg {
+  width: 20px;
+  height: 20px;
+  transition: all .2s;
+}
+.theme-btn .sun-icon { display: none; stroke: var(--text-primary); fill: none; stroke-width: 2; stroke-linecap: round; }
+.theme-btn .moon-icon { display: block; fill: var(--text-primary); }
+body.light .theme-btn .sun-icon { display: block; }
+body.light .theme-btn .moon-icon { display: none; }
+
+@media (max-width: 768px) {
+  /* Topbar */
+  .topbar {
+    padding: 0 14px;
+    height: auto;
+    min-height: 60px;
+    flex-wrap: nowrap;
+  }
+  .topbar p { display: none; }
+  .topbar h1 { font-size: 14px !important; }
+  .topbar > div:last-child {
+    display: flex;
+    gap: 6px;
+    flex-shrink: 0;
+  }
+  /* Hide Upload CSV text on mobile — icon only */
+  .btn-secondary span { display: none; }
+
+  /* Stats — 2x2 grid on mobile */
+  .stats-row {
+    grid-template-columns: 1fr 1fr !important;
+  }
+
+  /* Table — hide less important columns on mobile */
+  thead th:nth-child(5),
+  thead th:nth-child(6),
+  thead th:nth-child(8),
+  tbody td:nth-child(5),
+  tbody td:nth-child(6),
+  tbody td:nth-child(8) {
+    display: none;
+  }
+
+  /* Allow table to scroll horizontally */
+  .tbl-wrap {
+    overflow-x: auto;
+    -webkit-overflow-scrolling: touch;
+  }
+
+  table {
+    min-width: 500px;
+  }
+
+  /* Content padding */
+  .content { padding: 16px; }
+
+  /* Table header font smaller */
+  thead th { font-size: 10px; padding: 8px 10px; }
+  tbody td { padding: 10px; font-size: 12px; }
+}
+@media (max-width: 768px) {
+  .hide-mobile { display: none; }
+}
 
 </style>
 </head>
@@ -267,16 +373,19 @@ input[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); 
       <h1>Customer Orders</h1>
       <p>Manage and track all customer orders</p>
     </div>
-    <div style="display:flex;gap:10px">
-      <!-- toggles the CSV box open/close -->
-      <button type="button" class="btn btn-secondary"
-        onclick="document.getElementById('csvBox').classList.toggle('show')">
-        📤 Upload CSV
-      </button>
-      <button type="button" class="btn btn-primary" onclick="openModal()">
-        ＋ Create Order
-      </button>
-    </div>
+  <div style="display:flex;gap:6px;align-items:center;flex-shrink:0">
+  <button class="theme-btn" onclick="toggleTheme()" title="Toggle theme">
+    <svg class="moon-icon" viewBox="0 0 24 24"><path d="M12.3 4.9c.4-.2.6-.7.5-1.1s-.6-.8-1.1-.8c-4.9.1-8.7 4.1-8.7 9 0 5 4 9 9 9 3.8 0 7.1-2.4 8.4-5.9.2-.4 0-.9-.4-1.2s-.9-.2-1.2.1c-1 .9-2.3 1.4-3.7 1.4-3.1 0-5.7-2.5-5.7-5.7 0-1.9 1.1-3.8 2.9-4.8z"/></svg>
+    <svg class="sun-icon" viewBox="0 0 24 24"><circle cx="12" cy="12" r="5"/><line x1="12" y1="1" x2="12" y2="3"/><line x1="12" y1="21" x2="12" y2="23"/><line x1="4.22" y1="4.22" x2="5.64" y2="5.64"/><line x1="18.36" y1="18.36" x2="19.78" y2="19.78"/><line x1="1" y1="12" x2="3" y2="12"/><line x1="21" y1="12" x2="23" y2="12"/><line x1="4.22" y1="19.78" x2="5.64" y2="18.36"/><line x1="18.36" y1="5.64" x2="19.78" y2="4.22"/></svg>
+  </button>
+  <button type="button" class="btn btn-secondary btn-sm"
+    onclick="document.getElementById('csvBox').classList.toggle('show')">
+    📤 <span class="hide-mobile">Upload CSV</span>
+  </button>
+  <button type="button" class="btn btn-primary btn-sm" onclick="openModal()">
+    ＋ <span class="hide-mobile">Create Order</span>
+  </button>
+</div>
   </div>
 
   <!-- CSV UPLOAD BOX -->
@@ -704,7 +813,24 @@ function closeSidebar() {
   document.querySelector('.sidebar').classList.remove('open');
   document.getElementById('sidebarOverlay').classList.remove('show');
 }
+function toggleTheme() {
+  const isLight = document.body.classList.contains('light');
+  if (isLight) {
+    document.body.classList.remove('light');
+    localStorage.setItem('theme', 'dark');
+  } else {
+    document.body.classList.add('light');
+    localStorage.setItem('theme', 'light');
+  }
+}
 
+function loadTheme() {
+  if (localStorage.getItem('theme') === 'light') {
+    document.body.classList.add('light');
+  }
+}
+
+loadTheme();
 </script>
 </body>
 </html>
