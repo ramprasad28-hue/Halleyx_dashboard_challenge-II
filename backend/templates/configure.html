@@ -104,6 +104,46 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-primar
 .toast-success { border-left: 3px solid var(--success); }
 .toast-error { border-left: 3px solid var(--danger); }
 @keyframes slideUp { from { opacity:0; transform:translateY(12px) } to { opacity:1; transform:translateY(0) } }
+
+/* MOBILE HAMBURGER */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    z-index: 999;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .main {
+    margin-left: 0 !important;
+  }
+  .hamburger {
+    display: block;
+  }
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+  }
+  .sidebar-overlay.show {
+    display: block;
+  }
+}
+
+
 </style>
 </head>
 <body>
@@ -120,7 +160,11 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-primar
 </aside>
 
 <main class="main">
+  <!-- MOBILE OVERLAY (closes sidebar when clicking outside) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
   <div class="topbar">
+    <!-- ADD as first child inside topbar div -->
+<button class="hamburger" onclick="toggleSidebar()">☰</button>
     <div>
       <h1>Configure Dashboard</h1>
       <p>Click widgets to select them, configure settings, then save</p>
@@ -166,7 +210,7 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-primar
           <div class="sf-row">
             <div class="sf"><label>Format</label>
               <select id="kpi1-format">
-                <option value="currency">Currency ($)</option>
+                <option value="currency">Currency (₹)</option>
                 <option value="number">Number</option>
               </select>
             </div>
@@ -466,6 +510,17 @@ function getCookie(name) {
 }
 
 loadExisting();
+
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+
 </script>
 </body>
 </html>

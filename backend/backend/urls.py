@@ -31,8 +31,8 @@ urlpatterns = [
     path('orders/',views.orders_page),
     path('api/save-layout/',views.save_layout),
     path('api/load-layout/',views.load_layout),
-    path('api/orders/create',views.order_create),
-    path('api/orders/<int:pk>/update',views.order_update),
-    path('api/orders/<int:pk>/delete',views.order_delete),
+    path('api/orders/create/',views.order_create),
+    path('api/orders/<int:pk>/update/',views.order_update),
+    path('api/orders/<int:pk>/delete/',views.order_delete),
     path('configure/',views.configure_page),
 ]

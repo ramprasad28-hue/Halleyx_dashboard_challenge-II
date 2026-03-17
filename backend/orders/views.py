@@ -204,6 +204,7 @@ def order_delete(request,pk):
         return Response({"error":"Not found"},status=404)
     
     order.delete()
-    return Response({'message':'Deleted'},status=204)
+    return Response({'message':'Deleted'},status=200)
+
 def configure_page(request):
     return render(request,"configure.html")

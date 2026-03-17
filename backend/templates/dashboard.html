@@ -119,6 +119,45 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-primar
   .widgets-grid { grid-template-columns: repeat(4, 1fr); }
   .content { padding: 16px; }
 }
+
+/* MOBILE HAMBURGER */
+.hamburger {
+  display: none;
+  background: none;
+  border: none;
+  color: var(--text-primary);
+  font-size: 20px;
+  cursor: pointer;
+  padding: 4px 8px;
+}
+
+@media (max-width: 768px) {
+  .sidebar {
+    transform: translateX(-100%);
+    transition: transform .25s ease;
+    z-index: 999;
+  }
+  .sidebar.open {
+    transform: translateX(0);
+  }
+  .main {
+    margin-left: 0 !important;
+  }
+  .hamburger {
+    display: block;
+  }
+  .sidebar-overlay {
+    display: none;
+    position: fixed;
+    inset: 0;
+    background: rgba(0,0,0,0.5);
+    z-index: 998;
+  }
+  .sidebar-overlay.show {
+    display: block;
+  }
+}
+
 </style>
 </head>
 <body>
@@ -136,9 +175,12 @@ body { font-family: var(--font); background: var(--bg); color: var(--text-primar
 
 <!-- MAIN -->
 <main class="main">
-
+<!-- MOBILE OVERLAY (closes sidebar when clicking outside) -->
+<div class="sidebar-overlay" id="sidebarOverlay" onclick="closeSidebar()"></div>
   <!-- TOPBAR -->
   <div class="topbar">
+    <!-- ADD as first child inside topbar div -->
+<button class="hamburger" onclick="toggleSidebar()">☰</button>
     <div>
       <h1>Dashboard</h1>
       <p>Sales analytics overview</p>
@@ -200,23 +242,34 @@ function applyFilter() {
   // Destroy all existing charts
   Object.values(chartInstances).forEach(c => c.destroy());
   chartInstances = {};
+  const now=new Date();
+  let filtered=[...orderData];
 
-  fetch(`/api/orders/?range=${range}`)
-    .then(r => r.json())
-    .then(data => {
-      orderData = data;
-      if (Object.keys(savedConfigs).length > 0) {
-        renderDashboard(savedConfigs);
-      }
+  if(range==='today'){
+    filtered = orderData.filter(o => {
+      const d = new Date(o.created_at);
+      return d.toDateString() === now.toDateString();
     });
-}
+  } else if (range === '7') {
+    const cutoff = new Date(now - 7 * 24 * 60 * 60 * 1000);
+    filtered = orderData.filter(o => new Date(o.created_at) >= cutoff);
+  } else if (range === '30') {
+    const cutoff = new Date(now - 30 * 24 * 60 * 60 * 1000);
+    filtered = orderData.filter(o => new Date(o.created_at) >= cutoff);
+  } else if (range === '90') {
+    const cutoff = new Date(now - 90 * 24 * 60 * 60 * 1000);
+    filtered = orderData.filter(o => new Date(o.created_at) >= cutoff);
+  }
+  const temp=orderData;
+  orderData=filtered;
+  renderDashboard(savedConfigs);
+  orderData=temp;
+  }
+     
 
 // ── Render full dashboard from configs ───────────────────────────────────────
 function renderDashboard(configs) {
-  // Destroy old charts
-  Object.values(chartInstances).forEach(c => c.destroy());
-  chartInstances = {};
-
+  
   const content = document.getElementById('dashboardContent');
   const widgets = Object.values(configs);
 
@@ -294,7 +347,7 @@ function renderKPI(cfg, i) {
 
   const precision = cfg.precision || 0;
   const formatted = cfg.format === 'currency'
-    ? '$' + value.toFixed(precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
+    ? '₹' + value.toFixed(precision).replace(/\B(?=(\d{3})+(?!\d))/g, ',')
     : value.toFixed(precision);
 
   const el = document.getElementById('kpi-val-' + i);
@@ -402,36 +455,88 @@ function renderTable(cfg, wid) {
   if (cfg.sortBy === 'asc') data.sort((a, b) => parseFloat(a.total_amount) - parseFloat(b.total_amount));
   else if (cfg.sortBy === 'desc') data.sort((a, b) => parseFloat(b.total_amount) - parseFloat(a.total_amount));
 
-  data = data.slice(0, parseInt(cfg.pagination) || 10);
-
+  const limit = parseInt(cfg.pagination) || 10;
   const headerBg = cfg.headerBg || '#54bd95';
   const fontSize = cfg.fontSize || 14;
 
+  // Store full data for filtering
+  window['tableData_' + wid] = data;
+
   body.innerHTML = `
-    <div style="overflow-x:auto">
-      <table class="widget-table">
-        <thead>
-          <tr>${cols.map(c => `<th style="background:${headerBg}">${c.replace(/_/g, ' ')}</th>`).join('')}</tr>
-        </thead>
-        <tbody>
-          ${data.length
-            ? data.map(o => `<tr>${cols.map(c => `<td style="font-size:${fontSize}px">${
-                c === 'status'
-                  ? `<span class="badge badge-${o[c]}">${o[c]}</span>`
-                  : c === 'total_amount' || c === 'unit_price'
-                    ? '$' + parseFloat(o[c] || 0).toFixed(2)
-                    : c === 'created_at'
-                      ? new Date(o[c]).toLocaleDateString('en-US', {month:'short',day:'numeric',year:'numeric'})
-                      : (o[c] !== undefined ? o[c] : '—')
-              }</td>`).join('')}</tr>`).join('')
-            : `<tr><td colspan="${cols.length}" style="text-align:center;padding:30px;color:var(--text-muted)">No data available</td></tr>`
-          }
-        </tbody>
-      </table>
+    <!-- Filter row -->
+    <div style="display:flex;gap:8px;margin-bottom:12px;flex-wrap:wrap">
+      <input 
+        id="tf-search-${wid}"
+        type="text" 
+        placeholder="🔍 Search table..."
+        oninput="filterWidget('${wid}')"
+        style="flex:1;padding:7px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text-primary);font-size:12px;font-family:var(--font);outline:none;min-width:120px"
+      >
+      <select 
+        id="tf-status-${wid}"
+        onchange="filterWidget('${wid}')"
+        style="padding:7px 10px;background:var(--surface2);border:1px solid var(--border2);border-radius:8px;color:var(--text-primary);font-size:12px;font-family:var(--font);outline:none;cursor:pointer"
+      >
+        <option value="">All Status</option>
+        <option value="pending">Pending</option>
+        <option value="in_progress">In Progress</option>
+        <option value="completed">Completed</option>
+      </select>
+    </div>
+    <!-- Table -->
+    <div style="overflow-x:auto" id="tf-table-${wid}">
+      ${buildTableHTML(data.slice(0, limit), cols, headerBg, fontSize)}
+    </div>
+    <div style="font-size:11px;color:var(--text-muted);margin-top:8px" id="tf-count-${wid}">
+      Showing ${Math.min(limit, data.length)} of ${data.length} orders
     </div>
   `;
 }
 
+function filterWidget(wid) {
+  const q = document.getElementById('tf-search-' + wid)?.value.toLowerCase() || '';
+  const s = document.getElementById('tf-status-' + wid)?.value || '';
+  const cfg = Object.values(savedConfigs).find(c => c.type === 'table') || {};
+  const limit = parseInt(cfg.pagination) || 10;
+  const cols = cfg.columns || ['first_name','last_name','product','status','total_amount'];
+  const headerBg = cfg.headerBg || '#54bd95';
+  const fontSize = cfg.fontSize || 14;
+
+  let data = window['tableData_' + wid] || [];
+  data = data.filter(o =>
+    (!q || `${o.first_name} ${o.last_name} ${o.product} ${o.status}`.toLowerCase().includes(q)) &&
+    (!s || o.status === s)
+  );
+
+  const tableDiv = document.getElementById('tf-table-' + wid);
+  const countDiv = document.getElementById('tf-count-' + wid);
+  if (tableDiv) tableDiv.innerHTML = buildTableHTML(data.slice(0, limit), cols, headerBg, fontSize);
+  if (countDiv) countDiv.textContent = `Showing ${Math.min(limit, data.length)} of ${data.length} orders`;
+}
+
+function buildTableHTML(data, cols, headerBg, fontSize) {
+  return `
+    <table class="widget-table">
+      <thead>
+        <tr>${cols.map(c => `<th style="background:${headerBg}">${c.replace(/_/g,' ')}</th>`).join('')}</tr>
+      </thead>
+      <tbody>
+        ${data.length
+          ? data.map(o => `<tr>${cols.map(c => `<td style="font-size:${fontSize}px">${
+              c === 'status'
+                ? `<span class="badge badge-${o[c]}">${o[c]}</span>`
+                : c === 'total_amount' || c === 'unit_price'
+                  ? '₹' + parseFloat(o[c] || 0).toFixed(2)
+                  : c === 'created_at'
+                    ? new Date(o[c]).toLocaleDateString('en-US',{month:'short',day:'numeric',year:'numeric'})
+                    : (o[c] !== undefined ? o[c] : '—')
+            }</td>`).join('')}</tr>`).join('')
+          : `<tr><td colspan="${cols.length}" style="text-align:center;padding:20px;color:var(--text-muted)">No results found</td></tr>`
+        }
+      </tbody>
+    </table>
+  `;
+}
 // ── Empty state ───────────────────────────────────────────────────────────────
 function showEmptyState() {
   document.getElementById('dashboardContent').innerHTML = `
@@ -454,6 +559,17 @@ function getChartSubtitle(cfg) {
   if (cfg.xAxis && cfg.yAxis) return cfg.xAxis + ' vs ' + cfg.yAxis;
   return '';
 }
+
+function toggleSidebar() {
+  document.querySelector('.sidebar').classList.toggle('open');
+  document.getElementById('sidebarOverlay').classList.toggle('show');
+}
+function closeSidebar() {
+  document.querySelector('.sidebar').classList.remove('open');
+  document.getElementById('sidebarOverlay').classList.remove('show');
+}
+
+
 </script>
 </body>
 </html>
