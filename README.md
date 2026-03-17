@@ -239,3 +239,10 @@ Built for Halleyx Pre-Placement Challenge 2026
 ## 📄 License
 
 This project was built as a company challenge submission.
+
+## 🎥 Demo Video
+
+▶️ Watch the full demo on YouTube:
+[Click here to watch](https://youtu.be/y6JQEQLILjc)
+
+---
