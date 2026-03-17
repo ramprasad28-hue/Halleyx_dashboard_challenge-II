@@ -203,7 +203,7 @@ Jane,Smith,jane@example.com,+1555002,456 Oak Ave,Toronto,ON,M5V,CA,5g_unlimited,
 ```
 
 **Valid values:**
-- `country` — US, CA, AU, SG, HK
+- `country` — IND,US, CA, AU, SG, HK
 - `product` — fiber_300, 5g_unlimited, fiber_1gb, business_500, voip_corporate
 - `status` — pending, in_progress, completed
 - `created_by` — michael_harris, ryan_cooper, olivia_carter, lucas_martin
