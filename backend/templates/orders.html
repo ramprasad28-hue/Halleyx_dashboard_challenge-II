@@ -207,7 +207,9 @@ input[readonly] { background: rgba(255,255,255,0.03); color: var(--text-muted); 
     transform: translateX(-100%);
     transition: transform .25s ease;
     z-index: 999;
-    width: 240px !important;     /* fixed width — doesn't cover full screen */
+    width: 200px !important; 
+    box-shadow: 4px 0 20px; 
+    background: var(--sidebar-bg) !important;   /* fixed width — doesn't cover full screen */
     height: 100vh;
     position: fixed;
     top: 0;
@@ -546,6 +548,15 @@ body.light .theme-btn .moon-icon { display: none; }
             <option value="fiber_1gb">Fiber Internet 1 Gbps</option>
             <option value="business_500">Business Internet 500 Mbps</option>
             <option value="voip_corporate">VoIP Corporate Package</option>
+            <option value="Laptop">Laptop</option>
+            <option value="Smartphone">Smartphone</option>
+            <option value="Headphones">Headphones</option>
+            <option value="Camera">Camera</option>
+            <option value="Tablet">Tablet</option>
+            <option value="Mornitor">Mornitor</option>
+            <option value="Printer">Printer</option>
+            <option value="Keyboard">Keyboard</option>
+            <option value="Mouse">Mouse</option>
           </select>
           <span class="err-msg" id="e_product">Please fill the field</span>
         </div>
