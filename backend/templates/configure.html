@@ -203,6 +203,21 @@ body.light {
 body.light .theme-btn .sun-icon { display: block; }
 body.light .theme-btn .moon-icon { display: none; }
 
+.sidebar-logo-img {
+  height: 36px;
+  width: auto;
+  object-fit: contain;
+  /* Dark mode — make logo white */
+  filter: brightness(0) invert(1);
+  transition: filter .2s;
+  background-color:transparent;
+}
+
+body.light .sidebar-logo-img {
+  /* Light mode — show original colors with shadow to pop */
+  filter: drop-shadow(0 0 2px rgb(10, 3, 3));
+}
+
 
 </style>
 </head>
@@ -211,8 +226,12 @@ body.light .theme-btn .moon-icon { display: none; }
 <!-- SIDEBAR -->
 <aside class="sidebar">
   <div class="sidebar-logo">
-    <div class="logo-text"><div class="logo-icon">📊</div>Halleyx</div>
+  <div class="logo-text">
+    <img src="/static/images/halleyx-logo.png" 
+  alt="Halleyx" 
+  class="sidebar-logo-img">
   </div>
+</div>
   <div class="nav-label">Menu</div>
   <a href="/dashboard/" class="nav-item">▦ Dashboard</a>
   <a href="/orders/" class="nav-item">📋 Orders</a>

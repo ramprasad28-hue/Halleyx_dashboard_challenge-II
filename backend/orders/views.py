@@ -205,6 +205,6 @@ def order_delete(request,pk):
     
     order.delete()
     return Response({'message':'Deleted'},status=200)
-
+    
 def configure_page(request):
     return render(request,"configure.html")
