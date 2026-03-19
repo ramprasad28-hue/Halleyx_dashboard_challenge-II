@@ -247,8 +247,8 @@ Built for Halleyx Pre-Placement Challenge 2026
 
 This project was built as a company challenge submission.
 
-##logo 
-##Dark Theme
+## logo 
+## Dark Theme
 <img width="1919" height="1014" alt="Screenshot 2026-03-19 193234" src="https://github.com/user-attachments/assets/65bf1722-213a-471d-aedf-74033b81a8a6" />
-##Light Theme
+## Light Theme
 <img width="1919" height="1031" alt="Screenshot 2026-03-19 193225" src="https://github.com/user-attachments/assets/d4543ac5-5a14-4dd0-b726-11804c4eff2d" />
