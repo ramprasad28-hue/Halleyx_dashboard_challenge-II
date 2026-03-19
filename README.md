@@ -6,6 +6,13 @@ A full-stack web application built with **Django REST Framework** and **Vanilla 
 
 ---
 
+## 🎥 Demo Video
+
+▶️ Watch the full demo on YouTube:
+[Click here to watch on Youtube](https://youtu.be/y6JQEQLILjc)  ||
+[click here to show in Drive](https://drive.google.com/file/d/1K8RveIPYe2XiqEeGJ81F75VpZMwT_GU6/view?usp=sharing)
+
+---
 ## 🚀 Features
 
 ### 📋 Orders Management
@@ -240,10 +247,3 @@ Built for Halleyx Pre-Placement Challenge 2026
 
 This project was built as a company challenge submission.
 
-## 🎥 Demo Video
-
-▶️ Watch the full demo on YouTube:
-[Click here to watch on Youtube](https://youtu.be/y6JQEQLILjc)
-[click here to show in Drive](https://drive.google.com/file/d/1K8RveIPYe2XiqEeGJ81F75VpZMwT_GU6/view?usp=sharing)
-
----
